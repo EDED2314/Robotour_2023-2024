@@ -27,7 +27,7 @@ def write_json_file(data, file_path):
 def initData():
     data = {}
     if not os.path.exists("nav.json"):
-        data = {"blocks": [], "gates": [], "start": [], "stop": []}
+        data = {"blocks": [], "gates": [], "start": [0, 0], "stop": [0, 0]}
         write_json_file(data, "nav.json")
     else:
         data = read_json_file("nav.json")

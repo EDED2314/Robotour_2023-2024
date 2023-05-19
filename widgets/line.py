@@ -3,13 +3,16 @@ from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtCore import Qt, QPoint
 
 
-class LineGridWidget(QWidget):
+class PaintGridWidget(QWidget):
     def __init__(self, layout: QGridLayout, json_data, parent=None):
         super().__init__(parent)
         self.layout = layout
         self.setLayout(self.layout)
         self.json_data = json_data
         self.blocks = self.json_data["blocks"]
+        self.start = self.json_data["start"]
+        self.stop = self.json_data["stop"]
+        self.gates = self.json_data["gates"]
         # print(self.blocks)
 
         self.line_start = QPoint()
@@ -43,6 +46,11 @@ class LineGridWidget(QWidget):
         # # Draw a line between the two center points
         # painter.drawLine(center1, center2)
         # # painter.drawLine(0, 0, 25, 50)
+        self.paintCenterPoint(self.stop[0], self.stop[1], 5, painter)
+        pen = QPen(QColor(0, 255, 0))
+        pen.setWidth(2)
+        painter.setPen(pen)
+        self.paintCenterPoint(self.start[0], self.start[1], 5, painter)
 
     def getWidgetCenter(self, point: QPoint):
         widget = self.layout.itemAtPosition(point.x(), point.y()).widget()
@@ -50,6 +58,16 @@ class LineGridWidget(QWidget):
         center_x = rect.x() + rect.width() // 2
         center_y = rect.y() + rect.height() // 2
         return QPoint(center_x, center_y)
+
+    def paintCenterPoint(self, row: int, col: int, rad: int, painter: QPainter):
+        p = self.getWidgetCenter(QPoint(row, col))
+        painter.drawEllipse(
+            p.x() - rad,
+            p.y() - rad,
+            rad * 2,
+            rad * 2,
+        )
+        return
 
     def paintBlock(self, block):
         points = block["points"]
@@ -63,7 +81,6 @@ class LineGridWidget(QWidget):
         Its
         suposed to be like row, col in poiunts in nav.json
         so like, i wrote the points incorrectly, because row, col will give a x,y
-        
         """
 
         x1 = rect1.x()

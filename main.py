@@ -18,7 +18,7 @@ from PyQt5.QtCore import QSize, Qt, QPoint
 
 from utils.data import initData
 from layouts.map import Map
-from widgets.line import LineGridWidget
+from widgets.line import PaintGridWidget
 
 
 class MainWindow(QMainWindow):
@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
 
         main_layout = QHBoxLayout()
 
-        map_widget = LineGridWidget(self.map, self.json_data)
+        map_widget = PaintGridWidget(self.map, self.json_data)
         main_layout.addWidget(map_widget)
 
         central_widget = QWidget()

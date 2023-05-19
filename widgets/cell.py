@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QMenu,
     QAction,
 )
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtCore import QSize, Qt
 from functools import partial
 from utils.data import appendToBlocks
@@ -42,6 +42,20 @@ class CellWidget(QFrame):
 
         context_menu.exec_(self.mapToGlobal(event))
 
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+
+        # Set the border color and opacity
+        border_color = QColor(0, 0, 0, 50)  # Black color with 100 opacity
+
+        # Draw the border
+        pen = painter.pen()
+        pen.setWidth(2)
+        pen.setColor(border_color)
+        painter.setPen(pen)
+        painter.drawRect(self.rect())
+
     def generateSubActionsForBlocks(self, ctx_action: QAction):
         locs = ["T", "B", "L", "R"]
 
@@ -65,9 +79,9 @@ class CellWidget(QFrame):
         elif name == "B":
             col1 = col + 1
         elif name == "L":
-            row1 = row - 1
+            row1 = row + 1
         elif name == "R":
-            row1 = row - 1
+            row1 = row + 1
 
         block["points"] = [row, col, row1, col1]
         block["pos"] = name

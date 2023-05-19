@@ -32,3 +32,24 @@ def initData():
     else:
         data = read_json_file("nav.json")
     return data
+
+
+def appendToBlocks(block):
+    """Append block to blocks in nav.json
+
+    Keyword arguments:
+    block -- {
+            "points": [
+                0,
+                0,
+                0,
+                1
+            ],
+            "pos": "B"
+        },
+    Return: void
+    """
+    j = read_json_file("nav.json")
+    j["blocks"].append(block)
+    write_json_file(j, "nav.json")
+    return

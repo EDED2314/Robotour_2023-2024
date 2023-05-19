@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (
     QApplication,
     QGridLayout,
 )
-from PyQt5.QtGui import QDrag, QColor, QPainter, QPen
+from PyQt5.QtCore import Qt
 from widgets.cell import CellWidget
 
 
@@ -18,4 +18,5 @@ class Map(QGridLayout):
         for row in range(4):
             for col in range(4):
                 cell_widget = CellWidget(row, col)
+                # cell_widget.setAttribute(Qt.WA_OpaquePaintEvent)
                 self.addWidget(cell_widget, row, col)

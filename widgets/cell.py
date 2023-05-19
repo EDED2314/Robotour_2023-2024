@@ -15,7 +15,7 @@ class CellWidget(QFrame):
         self.col = col
         self.setMinimumSize(QSize(50, 50))
         self.setStyleSheet(
-            "border-width: 1;" "border-style: solid;" "border-color: rgb(0, 0, 0)"
+            "border-width: 1;" "border-style: solid;" "border-color: none"
         )
         self.setFrameShape(QFrame.Box)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -52,28 +52,8 @@ class CellWidget(QFrame):
     def generateSubActionsForBlocks(self, ctx_action: QAction):
         locs = ["T", "B", "L", "R"]
 
-        sub_one = QMenu("Num Blocks 1", self)
-        sub_two = QMenu("Num Blocks 2", self)
-        sub_three = QMenu("Num Blocks 3", self)
-
+        sub_menu = QMenu("Blocks", self)
         for loci in locs:
-            sub_one.addAction(loci)
-            for locj in locs:
-                if loci != locj:
-                    combo = loci + locj
-                    sub_two.addAction(combo)
-                    for lock in locs:
-                        if loci != lock and locj != lock:
-                            comboo = loci + locj + lock
-                            sub_three.addAction(comboo)
-
-        sub_menu = QMenu("Num Blocks", self)
-        sub_action1 = sub_menu.addAction("One block")
-        sub_action2 = sub_menu.addAction("Two blocks")
-        sub_action3 = sub_menu.addAction("Three blocks")
-
-        sub_action1.setMenu(sub_one)
-        sub_action2.setMenu(sub_two)
-        sub_action3.setMenu(sub_three)
+            sub_menu.addAction(loci)
 
         ctx_action.setMenu(sub_menu)

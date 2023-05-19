@@ -26,6 +26,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.json_data = json_data
         self.setWindowTitle("Robotour gui - Eddie Tang 25'")
+        self.setMinimumSize(QSize(200, 200))
         self.setMaximumSize(QSize(400, 400))
 
         self.map = Map()

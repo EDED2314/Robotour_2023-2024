@@ -45,4 +45,12 @@ class LineGridWidget(QWidget):
     def initBlocks(self):
         blocks = self.json_data["blocks"]
         for block in blocks:
+            # [{
+            #
+            # },
+            # {
+            #
+            # }
+            # ]
+
             pass

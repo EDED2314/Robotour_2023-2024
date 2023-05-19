@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import QSize, Qt
+from functools import partial
+from utils.data import appendToBlocks
 
 
 class CellWidget(QFrame):
@@ -38,22 +40,36 @@ class CellWidget(QFrame):
         # todo: may like hover or rihjt click to get info about it
         action5 = context_menu.addAction("Info")
 
-        action = context_menu.exec_(self.mapToGlobal(event))
-
-        if action == action1:
-            print(f"Action 1 selected for cell [{self.row}, {self.col}]")
-        # elif action == sub_action1:
-        #     print(f"Sub-Action 1 selected for cell [{self.row}, {self.col}]")
-        # elif action == sub_action2:
-        #     print(f"Sub-Action 2 selected for cell [{self.row}, {self.col}]")
-        elif action == action2:
-            print(f"Action 2 selected for cell [{self.row}, {self.col}]")
+        context_menu.exec_(self.mapToGlobal(event))
 
     def generateSubActionsForBlocks(self, ctx_action: QAction):
         locs = ["T", "B", "L", "R"]
 
         sub_menu = QMenu("Blocks", self)
         for loci in locs:
-            sub_menu.addAction(loci)
+            action = sub_menu.addAction(loci)
+            action.triggered.connect(
+                partial(self.generateSubActionsForBlocksListener, loci)
+            )
 
         ctx_action.setMenu(sub_menu)
+
+    def generateSubActionsForBlocksListener(self, name):
+        block = {"points": [], "pos": "T"}
+        row = self.row
+        col = self.col
+        row1 = row
+        col1 = col
+        if name == "T":
+            col1 = col + 1
+        elif name == "B":
+            col1 = col + 1
+        elif name == "L":
+            row1 = row - 1
+        elif name == "R":
+            row1 = row - 1
+
+        block["points"] = [row, col, row1, col1]
+        block["pos"] = name
+        appendToBlocks(block)
+        return

@@ -39,7 +39,7 @@ def appendToBlocks(block):
 
     Keyword arguments:
     block -- {
-            "points": [
+            "points" (In row, col format): [
                 0,
                 0,
                 0,

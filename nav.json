@@ -64,5 +64,7 @@
             "pos": "L"
         }
     ],
-    "gates": []
+    "gates": [],
+    "start": [],
+    "stop": []
 }

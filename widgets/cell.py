@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtCore import QSize, Qt
 from functools import partial
-from utils.data import appendToBlocks
+from utils.data import appendToBlocks, modifyStartPoint, modifyStopPoint
 
 
 class CellWidget(QFrame):
@@ -36,7 +36,15 @@ class CellWidget(QFrame):
 
         action2 = context_menu.addAction("Movement")
         action3 = context_menu.addAction("Start/Stop")
-        action4 = context_menu.addAction("Gates")
+
+        start_stop = QMenu("start stop menu", self)
+        start = start_stop.addAction("Start")
+        start.triggered.connect(partial(self.startStopListner, "start"))
+        stop = start_stop.addAction("Stop")
+        stop.triggered.connect(partial(self.startStopListner, "stop"))
+        action3.setMenu(start_stop)
+
+        action4 = context_menu.addAction("Mark as gate")
         # todo: may like hover or rihjt click to get info about it
         action5 = context_menu.addAction("Info")
 
@@ -86,4 +94,11 @@ class CellWidget(QFrame):
         block["points"] = [row, col, row1, col1]
         block["pos"] = name
         appendToBlocks(block)
+        return
+
+    def startStopListner(self, name):
+        if name == "start":
+            modifyStartPoint(self.row, self.col)
+        elif name == "stop":
+            modifyStopPoint(self.row, self.col)
         return

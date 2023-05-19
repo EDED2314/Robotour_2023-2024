@@ -27,7 +27,7 @@ def write_json_file(data, file_path):
 def initData():
     data = {}
     if not os.path.exists("nav.json"):
-        data = {"blocks": [], "gates": []}
+        data = {"blocks": [], "gates": [], "start": [], "stop": []}
         write_json_file(data, "nav.json")
     else:
         data = read_json_file("nav.json")
@@ -51,5 +51,19 @@ def appendToBlocks(block):
     """
     j = read_json_file("nav.json")
     j["blocks"].append(block)
+    write_json_file(j, "nav.json")
+    return
+
+
+def modifyStartPoint(row, col):
+    j = read_json_file("nav.json")
+    j["start"] = [row, col]
+    write_json_file(j, "nav.json")
+    return
+
+
+def modifyStopPoint(row, col):
+    j = read_json_file("nav.json")
+    j["stop"] = [row, col]
     write_json_file(j, "nav.json")
     return

@@ -85,8 +85,8 @@ class LineGridWidget(QWidget):
             p1 = QPoint(x1 + rect1.width(), y1)
             p2 = QPoint(x2 + rect2.width(), y2)
 
-        print(x1, y1, x2, y2)
-        print("----")
-        print(p1.x(), p1.y(), p2.x(), p2.y())
-        print("~~~~~")
+        # print(x1, y1, x2, y2)
+        # print("----")
+        # print(p1.x(), p1.y(), p2.x(), p2.y())
+        # print("~~~~~")
         return (p1, p2)

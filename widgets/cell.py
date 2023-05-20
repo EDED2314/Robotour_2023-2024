@@ -8,7 +8,7 @@ from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtCore import QSize, Qt
 from functools import partial
 from utils.data import (
-    appendToBlocks,
+    appendOrDeleteBlocks,
     modifyStartPoint,
     modifyStopPoint,
     appendGate,
@@ -40,9 +40,9 @@ class CellWidget(QFrame):
 
         self.generateSubActionsForBlocks(action1)
 
-        action2 = context_menu.addAction("Movement")
-        action3 = context_menu.addAction("Start/Stop")
+        action2 = context_menu.addAction("Movement (Useless rn)")
 
+        action3 = context_menu.addAction("Start/Stop")
         start_stop = QMenu("start stop menu", self)
         start = start_stop.addAction("Start")
         start.triggered.connect(partial(self.startStopListner, "start"))
@@ -51,7 +51,6 @@ class CellWidget(QFrame):
         action3.setMenu(start_stop)
 
         action4 = context_menu.addAction("Gates")
-
         gate_add_del = QMenu("Gate set un-set menu", self)
         add = gate_add_del.addAction("Set as gate")
         add.triggered.connect(partial(self.gateListener, "set"))
@@ -60,7 +59,7 @@ class CellWidget(QFrame):
         action4.setMenu(gate_add_del)
 
         # todo: may like hover or rihjt click to get info about it
-        action5 = context_menu.addAction("Info")
+        action5 = context_menu.addAction("Info (Useless rn)")
 
         context_menu.exec_(self.mapToGlobal(event))
 
@@ -107,7 +106,7 @@ class CellWidget(QFrame):
 
         block["points"] = [row, col, row1, col1]
         block["pos"] = name
-        appendToBlocks(block)
+        appendOrDeleteBlocks(block)
         return
 
     def startStopListner(self, name):

@@ -34,7 +34,7 @@ def initData():
     return data
 
 
-def appendToBlocks(block):
+def appendOrDeleteBlocks(block):
     """Append block to blocks in nav.json
 
     Keyword arguments:
@@ -50,7 +50,10 @@ def appendToBlocks(block):
     Return: void
     """
     j = read_json_file("nav.json")
-    j["blocks"].append(block)
+    if block in j["blocks"]:
+        j["blocks"].remove(block)
+    else:
+        j["blocks"].append(block)
     write_json_file(j, "nav.json")
     return
 

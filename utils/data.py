@@ -34,6 +34,16 @@ def initData():
     return data
 
 
+def initRobotdata():
+    data = {}
+    if not os.path.exists("robo.json"):
+        data = {"blocks": [], "start": [0, 0], "stop": [0, 0]}
+        write_json_file(data, "robo.json")
+    else:
+        data = read_json_file("robo.json")
+    return data
+
+
 def appendOrDeleteBlocks(block):
     """Append block to blocks in nav.json
 

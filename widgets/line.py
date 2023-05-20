@@ -1,12 +1,14 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout
 from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtCore import Qt, QPoint
+from layouts.map import Map
+from utils.data import initData
 
 
 class PaintGridWidget(QWidget):
-    def __init__(self, layout: QGridLayout, json_data, parent=None):
+    def __init__(self, json_data, parent=None):
         super().__init__(parent)
-        self.layout = layout
+        self.layout = Map(self.refreshData, self)
         self.setLayout(self.layout)
         self.json_data = json_data
         self.blocks = self.json_data["blocks"]
@@ -17,6 +19,14 @@ class PaintGridWidget(QWidget):
 
         self.line_start = QPoint()
         self.line_end = QPoint()
+
+    def refreshData(self, paint_grid_object_self):
+        paint_grid_object_self.json_data = initData()
+        paint_grid_object_self.blocks = paint_grid_object_self.json_data["blocks"]
+        paint_grid_object_self.start = paint_grid_object_self.json_data["start"]
+        paint_grid_object_self.stop = paint_grid_object_self.json_data["stop"]
+        paint_grid_object_self.gates = paint_grid_object_self.json_data["gates"]
+        paint_grid_object_self.update()
 
     def setLinePoints(self, start, end):
         self.line_start = start

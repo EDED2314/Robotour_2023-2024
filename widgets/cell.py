@@ -17,10 +17,12 @@ from utils.data import (
 
 
 class CellWidget(QFrame):
-    def __init__(self, row, col):
+    def __init__(self, row, col, refreshDataFunction, parent):
         super().__init__()
         self.row = row
         self.col = col
+        self.refreshFunction = refreshDataFunction
+        self.parent = parent
         self.setMinimumSize(QSize(50, 50))
         self.setStyleSheet(
             "border-width: 1;" "border-style: solid;" "border-color: none"
@@ -107,6 +109,7 @@ class CellWidget(QFrame):
         block["points"] = [row, col, row1, col1]
         block["pos"] = name
         appendOrDeleteBlocks(block)
+        self.refreshFunction(self.parent)
         return
 
     def startStopListner(self, name):
@@ -114,6 +117,7 @@ class CellWidget(QFrame):
             modifyStartPoint(self.row, self.col)
         elif name == "stop":
             modifyStopPoint(self.row, self.col)
+        self.refreshFunction(self.parent)
         return
 
     def gateListener(self, name):
@@ -121,4 +125,5 @@ class CellWidget(QFrame):
             appendGate(self.row, self.col)
         elif name == "del":
             delGate(self.row, self.col)
+        self.refreshFunction(self.parent)
         return

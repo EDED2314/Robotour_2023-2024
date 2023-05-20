@@ -29,11 +29,9 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(QSize(200, 200))
         self.setMaximumSize(QSize(400, 400))
 
-        self.map = Map()
-
         main_layout = QHBoxLayout()
 
-        map_widget = PaintGridWidget(self.map, self.json_data)
+        map_widget = PaintGridWidget(self.json_data)
         main_layout.addWidget(map_widget)
 
         central_widget = QWidget()

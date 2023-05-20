@@ -67,3 +67,17 @@ def modifyStopPoint(row, col):
     j["stop"] = [row, col]
     write_json_file(j, "nav.json")
     return
+
+
+def appendGate(row, col):
+    j = read_json_file("nav.json")
+    j["gates"].append([row, col])
+    write_json_file(j, "nav.json")
+    return
+
+
+def delGate(row, col):
+    j = read_json_file("nav.json")
+    j["gates"].remove([row, col])
+    write_json_file(j, "nav.json")
+    return

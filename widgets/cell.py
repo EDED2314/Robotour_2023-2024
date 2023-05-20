@@ -44,7 +44,15 @@ class CellWidget(QFrame):
         stop.triggered.connect(partial(self.startStopListner, "stop"))
         action3.setMenu(start_stop)
 
-        action4 = context_menu.addAction("Mark as gate")
+        action4 = context_menu.addAction("Gates")
+
+        gate_add_del = QMenu("Gate set un-set menu", self)
+        add = gate_add_del.addAction("Set as gate")
+        add.triggered.connect(partial(self.gateListener, "set"))
+        delete = gate_add_del.addAction("Delete this block's gate")
+        delete.triggered.connect(partial(self.gateListener, "del"))
+        action4.setMenu(gate_add_del)
+
         # todo: may like hover or rihjt click to get info about it
         action5 = context_menu.addAction("Info")
 
@@ -101,4 +109,11 @@ class CellWidget(QFrame):
             modifyStartPoint(self.row, self.col)
         elif name == "stop":
             modifyStopPoint(self.row, self.col)
+        return
+
+    def gateListener(self, name):
+        if name == "set":
+            pass
+        elif name == "del":
+            pass
         return

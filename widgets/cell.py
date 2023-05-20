@@ -39,10 +39,10 @@ class CellWidget(QFrame):
     def contextMenuEvent(self, event):
         context_menu = QMenu(self)
         action1 = context_menu.addAction("Blocks")
-
         self.generateSubActionsForBlocks(action1)
 
         action2 = context_menu.addAction("Movement (Useless rn)")
+        self.generateSubActionsForMovement(action2)
 
         action3 = context_menu.addAction("Start/Stop")
         start_stop = QMenu("start stop menu", self)
@@ -60,9 +60,6 @@ class CellWidget(QFrame):
         delete.triggered.connect(partial(self.gateListener, "del"))
         action4.setMenu(gate_add_del)
 
-        # todo: may like hover or rihjt click to get info about it
-        action5 = context_menu.addAction("Info (Useless rn)")
-
         context_menu.exec_(self.mapToGlobal(event))
 
     def paintEvent(self, event):
@@ -78,6 +75,15 @@ class CellWidget(QFrame):
         pen.setColor(border_color)
         painter.setPen(pen)
         painter.drawRect(self.rect())
+
+    def generateSubActionsForMovement(self, ctx_action: QAction):
+        locs = ["Forward", "Backward", "Left", "Right"]
+        sub_menu = QMenu("Blocks", self)
+        for loci in locs:
+            action = sub_menu.addAction(loci)
+            # todo do laster
+
+        ctx_action.setMenu(sub_menu)
 
     def generateSubActionsForBlocks(self, ctx_action: QAction):
         locs = ["T", "B", "L", "R"]

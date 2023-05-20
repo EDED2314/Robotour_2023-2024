@@ -32,13 +32,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Robotour gui - Eddie Tang 25'")
         self.setMaximumSize(QSize(400, 400))
 
-        toolbar = QToolBar()
-        self.addToolBar(toolbar)
-
-        # Create the export action
-        export_action = QAction("Export To Robot Json", self)
-        export_action.triggered.connect(self.exportClicked)
-        toolbar.addAction(export_action)
+        self.initToolBar()
 
         main_layout = QHBoxLayout()
 
@@ -51,6 +45,13 @@ class MainWindow(QMainWindow):
         map_widget.setLinePoints(QPoint(0, 0), QPoint(1, 1))
 
         self.setCentralWidget(central_widget)
+
+    def initToolBar(self):
+        toolbar = QToolBar()
+        self.addToolBar(toolbar)
+        export_action = QAction("Export To Robot Json", self)
+        export_action.triggered.connect(self.exportClicked)
+        toolbar.addAction(export_action)
 
     def exportClicked(self):
         file_dialog = QFileDialog()

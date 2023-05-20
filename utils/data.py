@@ -19,9 +19,11 @@ def write_json_file(data, file_path):
     try:
         with open(file_path, "w+") as file:
             json.dump(data, file, indent=4)
+        return True
     # print(f"Data written to '{file_path}' successfully.")
     except:
         print(f"Error writing data to '{file_path}'. - {data}")
+        return False
 
 
 def initData():

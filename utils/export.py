@@ -4,9 +4,10 @@ SQUARE_SIZE = 50  # 50 cm per square
 # 4 x 4 squares
 
 
-def convertToRobotableJson():
+def convertToRobotableJson(path):
     initRobotdata()
     robo = initData()
+    robo.__delitem__("gates")
     blocks = robo.get("blocks", [])  # [x1,x2,y1,y2]
     new_blks = []
     for block in blocks:
@@ -34,8 +35,8 @@ def convertToRobotableJson():
 
     robo["start"] = [s * SQUARE_SIZE for s in robo["start"]]
     robo["stop"] = [s * SQUARE_SIZE for s in robo["stop"]]
-    robo["points"] = new_blks
+    robo["blocks"] = new_blks
 
-    write_json_file(robo, "robo.json")
+    boo = write_json_file(robo, path)
 
-    return
+    return boo

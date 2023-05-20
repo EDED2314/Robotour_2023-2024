@@ -95,18 +95,8 @@ class CellWidget(QFrame):
         block = {"points": [], "pos": "T"}
         row = self.row
         col = self.col
-        row1 = row
-        col1 = col
-        if name == "T":
-            col1 = col + 1
-        elif name == "B":
-            col1 = col + 1
-        elif name == "L":
-            row1 = row + 1
-        elif name == "R":
-            row1 = row + 1
 
-        block["points"] = [row, col, row1, col1]
+        block["points"] = [row, col]
         block["pos"] = name
         appendOrDeleteBlocks(block)
         self.refreshFunction(self.parent)

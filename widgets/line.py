@@ -88,9 +88,8 @@ class PaintGridWidget(QWidget):
         points = block["points"]
         pos = block["pos"]
         widget1 = self.layout.itemAtPosition(points[0], points[1]).widget()
-        widget2 = self.layout.itemAtPosition(points[2], points[3]).widget()
+        # widget2 = self.layout.itemAtPosition(points[2], points[3]).widget()
         rect1 = widget1.geometry()
-        rect2 = widget2.geometry()
 
         """
         Its
@@ -101,21 +100,30 @@ class PaintGridWidget(QWidget):
         x1 = rect1.x()
         y1 = rect1.y()
 
-        x2 = rect2.x()
-        y2 = rect2.y()
-
         p1 = QPoint()
         p2 = QPoint()
 
-        if pos == "T" or pos == "L":
+        if pos == "T":
+            x2 = x1 + rect1.width()
+            y2 = y1
             p1 = QPoint(x1, y1)
             p2 = QPoint(x2, y2)
+
         elif pos == "B":
+            x2 = x1 + rect1.width()
+            y2 = y1
             p1 = QPoint(x1, y1 + rect1.height())
-            p2 = QPoint(x2, y2 + rect2.height())
+            p2 = QPoint(x2, y2 + rect1.height())
+        elif pos == "L":
+            x2 = x1
+            y2 = y1 + rect1.height()
+            p1 = QPoint(x1, y1)
+            p2 = QPoint(x2, y2)
         elif pos == "R":
+            x2 = x1
+            y2 = y1 + rect1.height()
             p1 = QPoint(x1 + rect1.width(), y1)
-            p2 = QPoint(x2 + rect2.width(), y2)
+            p2 = QPoint(x2 + rect1.width(), y2)
 
         # print(x1, y1, x2, y2)
         # print("----")

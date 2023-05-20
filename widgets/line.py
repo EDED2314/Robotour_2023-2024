@@ -30,7 +30,7 @@ class PaintGridWidget(QWidget):
 
         # Set the line color and width
         pen = QPen(QColor(255, 0, 0))  # Red color
-        pen.setWidth(2)
+        pen.setWidth(10)
         painter.setPen(pen)
 
         for block in self.blocks:
@@ -48,7 +48,7 @@ class PaintGridWidget(QWidget):
         # # painter.drawLine(0, 0, 25, 50)
         self.paintCenterPoint(self.stop[0], self.stop[1], 5, painter)
         pen = QPen(QColor(0, 255, 0))
-        pen.setWidth(2)
+        pen.setWidth(10)
         painter.setPen(pen)
         self.paintCenterPoint(self.start[0], self.start[1], 5, painter)
         pen = QPen(QColor(0, 0, 255))

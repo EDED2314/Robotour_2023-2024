@@ -78,6 +78,11 @@ def appendGate(row, col):
 
 def delGate(row, col):
     j = read_json_file("nav.json")
-    j["gates"].remove([row, col])
+    try:
+        j["gates"].remove([row, col])
+    except:
+        print(
+            f"[delGate() ERROR]: Couldn't remove [{row}, {col}]'s gate, probably does not exist."
+        )
     write_json_file(j, "nav.json")
     return

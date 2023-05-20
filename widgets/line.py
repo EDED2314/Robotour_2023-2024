@@ -51,6 +51,11 @@ class PaintGridWidget(QWidget):
         pen.setWidth(2)
         painter.setPen(pen)
         self.paintCenterPoint(self.start[0], self.start[1], 5, painter)
+        pen = QPen(QColor(0, 0, 255))
+        pen.setWidth(2)
+        painter.setPen(pen)
+        for gate in self.gates:
+            self.paintCenterPoint(gate[0], gate[1], 10, painter)
 
     def getWidgetCenter(self, point: QPoint):
         widget = self.layout.itemAtPosition(point.x(), point.y()).widget()

@@ -7,7 +7,13 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtCore import QSize, Qt
 from functools import partial
-from utils.data import appendToBlocks, modifyStartPoint, modifyStopPoint
+from utils.data import (
+    appendToBlocks,
+    modifyStartPoint,
+    modifyStopPoint,
+    appendGate,
+    delGate,
+)
 
 
 class CellWidget(QFrame):
@@ -113,7 +119,7 @@ class CellWidget(QFrame):
 
     def gateListener(self, name):
         if name == "set":
-            pass
+            appendGate(self.row, self.col)
         elif name == "del":
-            pass
+            delGate(self.row, self.col)
         return

@@ -1,112 +1,114 @@
-import sys
+import heapq
 
 
-class PathFinder:
-    def __init__(self, map_data):
-        self.map = map_data["map"]
-        self.blocks = map_data["blocks"]
-        self.gates = map_data["gates"]
-        self.start = map_data["start"]
-        self.end = map_data["stop"]
-        self.visited = set()
-        self.max_gates = 0
-        self.best_path = None
-
-    def find_path(self):
-        self.dfs(self.start, 0, 0, [])
-        return self.best_path
-
-    # def dfs(self, current, current_time, num_gates, path):
-    #     if current_time > 60:
-    #         return
-    #     if current == tuple(self.end) and 50 <= current_time <= 60:
-    #         if num_gates > self.max_gates:
-    #             self.max_gates = num_gates
-    #             self.best_path = path[:]
-    #         return
-
-    #     self.visited.add(tuple(current))
-    #     for next_pos in self.get_neighbors(current):
-    #         if tuple(next_pos) not in self.visited:
-    #             next_time = current_time + self.get_travel_time(current, next_pos)
-    #             next_gates = num_gates + self.get_gate_incentive(next_pos)
-    #             self.dfs(next_pos, next_time, next_gates, path + [next_pos])
-    #     self.visited.remove(tuple(current))
-
-    def dfs(self, current, current_time, num_gates, path):
-        if current == tuple(self.end):
-            self.best_path = path[:]
-            return
-
-        self.visited.add(tuple(current))
-        for next_pos in self.get_neighbors(current):
-            if tuple(next_pos) not in self.visited:
-                next_time = current_time + self.get_travel_time(current, next_pos)
-                next_gates = num_gates + self.get_gate_incentive(next_pos)
-                self.dfs(next_pos, next_time, next_gates, path + [next_pos])
-
-    def get_neighbors(self, pos):
-        x, y = pos
-        neighbors = []
-        if x > 0:
-            neighbors.append((x - 1, y))
-        if x < len(self.map) - 1:
-            neighbors.append((x + 1, y))
-        if y > 0:
-            neighbors.append((x, y - 1))
-        if y < len(self.map[0]) - 1:
-            neighbors.append((x, y + 1))
-        return neighbors
-
-    def get_travel_time(self, pos1, pos2):
-        x1, y1 = pos1
-        x2, y2 = pos2
-        block = self.get_block((x1, y1), (x2, y2))
-        if block:
-            return 5  # Travel time for a block
-        return 1  # Travel time for an empty cell
-
-    def get_gate_incentive(self, pos):
-        x, y = pos
-        if (x, y) in self.gates:
-            return 1  # Increment for passing through a gate
-        return 0
-
-    def get_block(self, pos1, pos2):
-        for block in self.blocks:
-            points = block["points"]
-            if (
-                pos1[0] == points[0]
-                and pos1[1] == points[1]
-                and pos2[0] == points[2]
-                and pos2[1] == points[3]
-            ) or (
-                pos1[0] == points[2]
-                and pos1[1] == points[3]
-                and pos2[0] == points[0]
-                and pos2[1] == points[1]
-            ):
-                return block
-        return None
+def heuristic(start, goal):
+    return abs(goal[0] - start[0]) + abs(goal[1] - start[1])
 
 
-# Example usage
+def get_neighbors(node, map_data):
+    directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+    neighbors = []
+    for direction in directions:
+        neighbor = (node[0] + direction[0], node[1] + direction[1])
+        if is_valid_neighbor(neighbor, map_data):
+            neighbors.append(neighbor)
+    return neighbors
+
+
+def is_valid_neighbor(neighbor, map_data):
+    x, y = neighbor
+    for block in map_data["blocks"]:
+        points = block["points"]
+        if points[0] <= x <= points[1] and points[0] <= y <= points[1]:
+            return False
+    return True
+
+
+def find_path(map_data):
+    start = tuple(map_data["start"])
+    goal = tuple(map_data["stop"])
+
+    open_list = [(0, start)]
+    closed_set = set()
+    g_score = {start: 0}
+    f_score = {start: heuristic(start, goal)}
+    came_from = {}
+
+    while open_list:
+        current = heapq.heappop(open_list)[1]
+
+        if current == goal:
+            return reconstruct_path(start, current, came_from)
+
+        closed_set.add(current)
+
+        for neighbor in get_neighbors(current, map_data):
+            if neighbor in closed_set:
+                continue
+
+            tentative_g_score = g_score[current] + 5
+
+            if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                came_from[neighbor] = current
+                g_score[neighbor] = tentative_g_score
+                f_score[neighbor] = tentative_g_score + heuristic(neighbor, goal)
+                heapq.heappush(open_list, (f_score[neighbor], neighbor))
+
+    return None
+
+
+def reconstruct_path(start, current, came_from):
+    path = [current]
+    while current != start:
+        current = came_from[current]
+        path.append(current)
+    return path[::-1]
+
+
+def find_paths(map_data):
+    paths = []
+    gates = map_data["gates"]
+    if len(gates) < 2:
+        return paths
+
+    for i in range(len(gates) - 1):
+        new_map_data = map_data.copy()
+        new_map_data["stop"] = gates[i]
+        path = find_path(new_map_data)
+        if path:
+            paths.append(path)
+            if len(paths) == 2:
+                break
+        new_map_data["start"] = gates[i]
+        new_map_data["stop"] = gates[i + 1]
+        path = find_path(new_map_data)
+        if path:
+            paths.append(path)
+            if len(paths) == 2:
+                break
+
+    return paths
+
+
 map_data = {
-    "map": [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
     "blocks": [
-        {"points": [1, 1, 2, 1], "pos": "L"},
-        {"points": [2, 2, 3, 2], "pos": "R"},
-        {"points": [1, 2, 1, 3], "pos": "B"},
+        {"points": [0, 1], "pos": "B"},
+        {"points": [0, 1], "pos": "R"},
+        {"points": [2, 3], "pos": "B"},
+        {"points": [0, 2], "pos": "R"},
+        {"points": [2, 2], "pos": "T"},
+        {"points": [2, 2], "pos": "L"},
+        {"points": [2, 1], "pos": "B"},
+        {"points": [2, 0], "pos": "T"},
     ],
-    "gates": [[3, 3], [1, 2]],
-    "start": [0, 2],
+    "gates": [[0, 2], [2, 0], [2, 3]],
+    "start": [3, 1],
     "stop": [0, 1],
 }
-
-path_finder = PathFinder(map_data)
-path = path_finder.find_path()
-if path:
-    print("Path found:")
-    print(path)
+paths = find_paths(map_data)
+if paths:
+    for i, path in enumerate(paths):
+        time = (len(path) - 1) * 5
+        print(f"Path {i+1}: {path}, Time: {time} seconds")
 else:
-    print("No valid path found.")
+    print("No viable paths found.")

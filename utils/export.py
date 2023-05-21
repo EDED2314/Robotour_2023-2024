@@ -7,7 +7,8 @@ SQUARE_SIZE = 50  # 50 cm per square
 def convertToRobotableJson(path):
     initRobotdata()
     robo = initData()
-    robo.__delitem__("gates")
+    robo.__delitem__("gates")  # probably want to add it back
+    # todo: implement actions
     blocks = robo.get("blocks", [])  # [x1,x2,y1,y2]
     new_blks = []
     for block in blocks:

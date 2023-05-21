@@ -56,5 +56,14 @@
     "stop": [
         0,
         50
+    ],
+    "actions": [
+        {
+            "points": [
+                1,
+                3
+            ],
+            "direction": "F"
+        }
     ]
 }

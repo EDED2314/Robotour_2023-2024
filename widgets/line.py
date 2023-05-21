@@ -15,10 +15,11 @@ class PaintGridWidget(QWidget):
         self.start = self.json_data["start"]
         self.stop = self.json_data["stop"]
         self.gates = self.json_data["gates"]
+        self.actions = self.json_data["actions"]
         # print(self.blocks)
 
-        self.line_start = QPoint()
-        self.line_end = QPoint()
+        self.arrow_size = 15
+        self.robot_bounds = 20
 
     def refreshData(self, paint_grid_object_self):
         paint_grid_object_self.json_data = initData()
@@ -26,6 +27,7 @@ class PaintGridWidget(QWidget):
         paint_grid_object_self.start = paint_grid_object_self.json_data["start"]
         paint_grid_object_self.stop = paint_grid_object_self.json_data["stop"]
         paint_grid_object_self.gates = paint_grid_object_self.json_data["gates"]
+        paint_grid_object_self.actions = paint_grid_object_self.json_data["actions"]
         paint_grid_object_self.update()
 
     def setLinePoints(self, start, end):
@@ -40,7 +42,7 @@ class PaintGridWidget(QWidget):
 
         # Set the line color and width
         pen = QPen(QColor(255, 0, 0))  # Red color
-        pen.setWidth(10)
+        pen.setWidth(self.robot_bounds)
         painter.setPen(pen)
 
         for block in self.blocks:
@@ -56,6 +58,9 @@ class PaintGridWidget(QWidget):
         # # Draw a line between the two center points
         # painter.drawLine(center1, center2)
         # # painter.drawLine(0, 0, 25, 50)
+        pen = QPen(QColor(255, 0, 0))
+        pen.setWidth(10)
+        painter.setPen(pen)
         self.paintCenterPoint(self.stop[0], self.stop[1], 5, painter)
         pen = QPen(QColor(0, 255, 0))
         pen.setWidth(10)
@@ -66,6 +71,8 @@ class PaintGridWidget(QWidget):
         painter.setPen(pen)
         for gate in self.gates:
             self.paintCenterPoint(gate[0], gate[1], 10, painter)
+        for action in self.actions:
+            self.paintArrow(action, painter)
 
     def getWidgetCenter(self, point: QPoint):
         widget = self.layout.itemAtPosition(point.x(), point.y()).widget()
@@ -73,6 +80,44 @@ class PaintGridWidget(QWidget):
         center_x = rect.x() + rect.width() // 2
         center_y = rect.y() + rect.height() // 2
         return QPoint(center_x, center_y)
+
+    def getArrowHeadPoints(self, end_point: QPoint, direc):
+        # todo: change direction of arrow dybnamically
+        return [
+            end_point,
+            QPoint(end_point.x() + self.arrow_size, end_point.y() + self.arrow_size),
+            QPoint(end_point.x() - self.arrow_size, end_point.y() + self.arrow_size),
+        ]
+
+    def paintArrow(self, action, painter: QPainter):
+        cell = action["points"]
+        direc = action["direction"]
+        widget = self.layout.itemAtPosition(cell[0], cell[1]).widget()
+        rect = widget.geometry()
+        center_x = rect.x() + rect.width() // 2
+        center_y = rect.y() + rect.height() // 2
+        y = rect.y()
+        x = rect.x()
+
+        start_point = QPoint(center_x, center_y)
+        end_point = QPoint(center_x, center_y)
+        if direc == "F":
+            start_point = QPoint(center_x, y + rect.height())
+            end_point = QPoint(center_x, y)
+        elif direc == "B":
+            start_point = QPoint(center_x, y)
+            end_point = QPoint(center_x, y + rect.height())
+        elif direc == "L":
+            start_point = QPoint(x + rect.width(), center_y)
+            end_point = QPoint(x, center_y)
+        elif direc == "R":
+            start_point = QPoint(x, center_y)
+            end_point = QPoint(x + rect.width(), center_y)
+
+        arrow_points = self.getArrowHeadPoints(end_point, direc)
+        painter.drawLine(start_point, end_point)
+        painter.drawPolygon(*arrow_points)
+        return
 
     def paintCenterPoint(self, row: int, col: int, rad: int, painter: QPainter):
         p = self.getWidgetCenter(QPoint(row, col))

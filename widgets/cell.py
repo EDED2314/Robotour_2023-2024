@@ -13,6 +13,7 @@ from utils.data import (
     modifyStopPoint,
     appendGate,
     delGate,
+    appendOrDeleteMovement,
 )
 
 
@@ -77,11 +78,13 @@ class CellWidget(QFrame):
         painter.drawRect(self.rect())
 
     def generateSubActionsForMovement(self, ctx_action: QAction):
-        locs = ["Forward", "Backward", "Left", "Right"]
+        locs = ["F", "B", "L", "R"]
         sub_menu = QMenu("Blocks", self)
-        for loci in locs:
-            action = sub_menu.addAction(loci)
-            # todo do laster
+        for move in locs:
+            action = sub_menu.addAction(move)
+            action.triggered.connect(
+                partial(self.generateSubActionsForMovementListener, move)
+            )
 
         ctx_action.setMenu(sub_menu)
 
@@ -96,6 +99,12 @@ class CellWidget(QFrame):
             )
 
         ctx_action.setMenu(sub_menu)
+
+    def generateSubActionsForMovementListener(self, name):
+        move = {"points": [self.row, self.col], "direction": name}
+        appendOrDeleteMovement(move)
+        self.refreshFunction(self.parent)
+        return
 
     def generateSubActionsForBlocksListener(self, name):
         block = {"points": [], "pos": "T"}

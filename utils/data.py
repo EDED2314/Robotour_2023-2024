@@ -29,7 +29,13 @@ def write_json_file(data, file_path):
 def initData():
     data = {}
     if not os.path.exists("nav.json"):
-        data = {"blocks": [], "gates": [], "start": [0, 0], "stop": [0, 0]}
+        data = {
+            "blocks": [],
+            "gates": [],
+            "start": [0, 0],
+            "stop": [0, 0],
+            "actions": [],
+        }
         write_json_file(data, "nav.json")
     else:
         data = read_json_file("nav.json")
@@ -39,7 +45,7 @@ def initData():
 def initRobotdata():
     data = {}
     if not os.path.exists("robo.json"):
-        data = {"blocks": [], "start": [0, 0], "stop": [0, 0]}
+        data = {"blocks": [], "start": [0, 0], "stop": [0, 0], "actions": []}
         write_json_file(data, "robo.json")
     else:
         data = read_json_file("robo.json")
@@ -54,8 +60,6 @@ def appendOrDeleteBlocks(block):
             "points" (In row, col format): [
                 0,
                 0,
-                0,
-                1
             ],
             "pos": "B"
         },
@@ -67,6 +71,29 @@ def appendOrDeleteBlocks(block):
     else:
         j["blocks"].append(block)
     write_json_file(j, "nav.json")
+    return
+
+
+def appendOrDeleteMovement(move):
+    """Append or delete move into nav.json
+
+    Keyword arguments:
+    move -- {
+        "points":[
+            0,
+            0
+        ],
+        "direction": "["Forward", "Backward", "Left", "Right"]"
+    }
+    Return: void
+    """
+    j = read_json_file("nav.json")
+    if move in j["actions"]:
+        j["actions"].remove(move)
+    else:
+        j["actions"].append(move)
+    write_json_file(j, "nav.json")
+
     return
 
 

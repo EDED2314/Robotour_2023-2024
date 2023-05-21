@@ -3,6 +3,7 @@ from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtCore import Qt, QPoint
 from layouts.map import Map
 from utils.data import initData
+from constants import *
 
 
 class PaintGridWidget(QWidget):
@@ -16,10 +17,7 @@ class PaintGridWidget(QWidget):
         self.stop = self.json_data["stop"]
         self.gates = self.json_data["gates"]
         self.actions = self.json_data["actions"]
-        # print(self.blocks)
-
-        self.arrow_size = 10
-        self.robot_bounds = 20
+        self.arrow_size = ARROW_SIZE
 
     def refreshData(self, paint_grid_object_self):
         paint_grid_object_self.json_data = initData()
@@ -42,7 +40,7 @@ class PaintGridWidget(QWidget):
 
         # Set the line color and width
         pen = QPen(QColor(255, 0, 0))  # Red color
-        pen.setWidth(self.robot_bounds)
+        pen.setWidth(ROBOT_RADIUS)
         painter.setPen(pen)
 
         for block in self.blocks:

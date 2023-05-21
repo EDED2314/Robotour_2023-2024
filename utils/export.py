@@ -1,6 +1,7 @@
 from utils.data import read_json_file, write_json_file, initRobotdata, initData
+from constants import *
 
-SQUARE_SIZE = 50  # 50 cm per square
+# 50 cm per square
 # 4 x 4 squares
 
 

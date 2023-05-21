@@ -1,0 +1,4 @@
+# centimeters
+ARROW_SIZE = 10
+ROBOT_RADIUS = 20
+SQUARE_SIZE = 50

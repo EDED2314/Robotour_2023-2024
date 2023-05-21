@@ -45,7 +45,12 @@ def initData():
 def initRobotdata():
     data = {}
     if not os.path.exists("robo.json"):
-        data = {"blocks": [], "start": [0, 0], "stop": [0, 0], "actions": []}
+        data = {
+            "blocks": [],
+            "start": [0, 0, "mid"],
+            "stop": [0, 0, "mid"],
+            "actions": [],
+        }
         write_json_file(data, "robo.json")
     else:
         data = read_json_file("robo.json")
@@ -105,16 +110,16 @@ def appendOrDeleteMovement(move):
     return
 
 
-def modifyStartPoint(row, col):
+def modifyStartPoint(row, col, side: str):
     j = read_json_file("nav.json")
-    j["start"] = [row, col]
+    j["start"] = [row, col, side]
     write_json_file(j, "nav.json")
     return
 
 
-def modifyStopPoint(row, col):
+def modifyStopPoint(row, col, side: str):
     j = read_json_file("nav.json")
-    j["stop"] = [row, col]
+    j["stop"] = [row, col, side]
     write_json_file(j, "nav.json")
     return
 

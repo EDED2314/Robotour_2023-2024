@@ -39,6 +39,7 @@ class CellWidget(QFrame):
 
     def contextMenuEvent(self, event):
         context_menu = QMenu(self)
+
         action1 = context_menu.addAction("Blocks")
         self.generateSubActionsForBlocks(action1)
 
@@ -46,20 +47,10 @@ class CellWidget(QFrame):
         self.generateSubActionsForMovement(action2)
 
         action3 = context_menu.addAction("Start/Stop")
-        start_stop = QMenu("start stop menu", self)
-        start = start_stop.addAction("Start")
-        start.triggered.connect(partial(self.startStopListner, "start"))
-        stop = start_stop.addAction("Stop")
-        stop.triggered.connect(partial(self.startStopListner, "stop"))
-        action3.setMenu(start_stop)
+        self.generateSubActionsForStartStop(action3)
 
         action4 = context_menu.addAction("Gates")
-        gate_add_del = QMenu("Gate set un-set menu", self)
-        add = gate_add_del.addAction("Set as gate")
-        add.triggered.connect(partial(self.gateListener, "set"))
-        delete = gate_add_del.addAction("Delete this block's gate")
-        delete.triggered.connect(partial(self.gateListener, "del"))
-        action4.setMenu(gate_add_del)
+        self.generateSubActionsForGates(action4)
 
         context_menu.exec_(self.mapToGlobal(event))
 
@@ -76,6 +67,34 @@ class CellWidget(QFrame):
         pen.setColor(border_color)
         painter.setPen(pen)
         painter.drawRect(self.rect())
+
+    def generateSubActionsForGates(self, ctx_action: QAction):
+        gate_add_del = QMenu("Gate set un-set menu", self)
+        add = gate_add_del.addAction("Set as gate")
+        add.triggered.connect(partial(self.gateListener, "set"))
+        delete = gate_add_del.addAction("Delete this block's gate")
+        delete.triggered.connect(partial(self.gateListener, "del"))
+        ctx_action.setMenu(gate_add_del)
+
+    def generateSubActionsForStartStop(self, ctx_action: QAction):
+        sides = ["mid", "top", "bottom", "left", "right"]
+        start_stop = QMenu("start stop menu", self)
+        start = start_stop.addAction("Start")
+        stop = start_stop.addAction("Stop")
+
+        start_menu = QMenu("start selector menu", self)
+        for side in sides:
+            act = start_menu.addAction(side)
+            act.triggered.connect(partial(self.startStopListner, "start", side))
+        start.setMenu(start_menu)
+
+        stop_menu = QMenu("stop selector menu", self)
+        for side in sides:
+            act = stop_menu.addAction(side)
+            act.triggered.connect(partial(self.startStopListner, "stop", side))
+        stop.setMenu(stop_menu)
+
+        ctx_action.setMenu(start_stop)
 
     def generateSubActionsForMovement(self, ctx_action: QAction):
         locs = ["F", "B", "L", "R"]
@@ -117,11 +136,11 @@ class CellWidget(QFrame):
         self.refreshFunction(self.parent)
         return
 
-    def startStopListner(self, name):
+    def startStopListner(self, name: str, side: str):
         if name == "start":
-            modifyStartPoint(self.row, self.col)
+            modifyStartPoint(self.row, self.col, side)
         elif name == "stop":
-            modifyStopPoint(self.row, self.col)
+            modifyStopPoint(self.row, self.col, side)
         self.refreshFunction(self.parent)
         return
 

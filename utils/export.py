@@ -60,8 +60,50 @@ def convertToRobotableJson(path):
 
         new_blks.append([real_x, real_y, mod_x, mod_y])
 
-    robo["start"] = [s * SQUARE_SIZE for s in robo["start"]]
-    robo["stop"] = [s * SQUARE_SIZE for s in robo["stop"]]
+    start_x = robo["start"][0] * SQUARE_SIZE
+    start_y = robo["start"][1] * SQUARE_SIZE
+    start_side = robo["start"][2]
+
+    start_center_x = start_x + SQUARE_SIZE // 2
+    start_center_y = start_y + SQUARE_SIZE // 2
+
+    actual_start_x = start_x
+    actual_start_y = start_y
+
+    if start_side == "mid":
+        actual_start_x, actual_start_y = start_center_x, start_center_y
+    elif start_side == "top":
+        actual_start_x, actual_start_y = start_center_x, start_y
+    elif start_side == "bottom":
+        actual_start_x, actual_start_y = start_center_x, start_y + SQUARE_SIZE
+    elif start_side == "left":
+        actual_start_x, actual_start_y = start_x, start_center_y
+    elif start_side == "right":
+        actual_start_x, actual_start_y = start_x + SQUARE_SIZE, start_center_y
+
+    stop_x = robo["stop"][0] * SQUARE_SIZE
+    stop_y = robo["stop"][1] * SQUARE_SIZE
+    stop_side = robo["stop"][2]
+
+    stop_center_x = stop_x + SQUARE_SIZE // 2
+    stop_center_y = stop_y + SQUARE_SIZE // 2
+
+    actual_stop_x = stop_x
+    actual_stop_y = stop_y
+
+    if stop_side == "mid":
+        actual_stop_x, actual_stop_y = stop_center_x, stop_center_y
+    elif stop_side == "top":
+        actual_stop_x, actual_stop_y = stop_center_x, stop_y
+    elif stop_side == "bottom":
+        actual_stop_x, actual_stop_y = stop_center_x, stop_y + SQUARE_SIZE
+    elif stop_side == "left":
+        actual_stop_x, actual_stop_y = stop_x, start_center_y
+    elif stop_side == "right":
+        actual_stop_x, actual_stop_y = stop_x + SQUARE_SIZE, stop_center_y
+
+    robo["start"] = [actual_start_y, actual_start_x]
+    robo["stop"] = [actual_stop_y, actual_stop_x]
     robo["blocks"] = new_blks
     robo["actions"] = new_actions
 

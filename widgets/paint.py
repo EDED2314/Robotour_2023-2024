@@ -37,38 +37,15 @@ class PaintGridWidget(QWidget):
         super().paintEvent(event)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
-
-        # Set the line color and width
-        pen = QPen(QColor(255, 0, 0))  # Red color
-        pen.setWidth(ROBOT_RADIUS)
-        painter.setPen(pen)
-
         for block in self.blocks:
-            p1, p2 = self.paintBlock(block)
-            # print(p1, p2)
-            painter.drawLine(p1, p2)
+            self.paintBlock(block, painter)
+        self.paintStartStop(self.start, self.stop, painter)
 
-        # # Calculate the center points of the widgets
-        # center1 = self.getWidgetCenter(self.line_start)
-        # center2 = self.getWidgetCenter(self.line_end)
-        # # print(center1, center2)
-
-        # # Draw a line between the two center points
-        # painter.drawLine(center1, center2)
-        # # painter.drawLine(0, 0, 25, 50)
-        pen = QPen(QColor(255, 0, 0))
-        pen.setWidth(10)
-        painter.setPen(pen)
-        self.paintCenterPoint(self.stop[0], self.stop[1], 5, painter)
-        pen = QPen(QColor(0, 255, 0))
-        pen.setWidth(10)
-        painter.setPen(pen)
-        self.paintCenterPoint(self.start[0], self.start[1], 5, painter)
         pen = QPen(QColor(0, 0, 255))
         pen.setWidth(2)
         painter.setPen(pen)
         for gate in self.gates:
-            self.paintCenterPoint(gate[0], gate[1], 10, painter)
+            self.paintCenterPoint(gate[0], gate[1], GUI_CIRCLE_RAD * 2, painter)
         for action in self.actions:
             self.paintArrow(action, painter)
 
@@ -122,6 +99,64 @@ class PaintGridWidget(QWidget):
                 ),
             ]
 
+    def paintStartStop(self, start, stop, painter: QPainter):
+        pen = QPen(QColor(255, 0, 0))
+        pen.setWidth(GUI_START_STOP_CIRCLE_WIDTH)
+        painter.setPen(pen)
+
+        start_widget = self.layout.itemAtPosition(self.start[0], self.start[1]).widget()
+        stop_widget = self.layout.itemAtPosition(self.stop[0], self.stop[1]).widget()
+        start_rect = start_widget.geometry()
+        stop_rect = stop_widget.geometry()
+
+        start_x = start_rect.x()
+        start_y = start_rect.y()
+        start_center_x = start_rect.x() + start_rect.width() // 2
+        start_center_y = start_rect.y() + start_rect.height() // 2
+
+        stop_x = stop_rect.x()
+        stop_y = stop_rect.y()
+        stop_center_x = stop_rect.x() + stop_rect.width() // 2
+        stop_center_y = stop_rect.y() + stop_rect.height() // 2
+
+        stop_side = stop[2]
+
+        if stop_side == "mid":
+            self.paintCircle(stop_center_x, stop_center_y, GUI_CIRCLE_RAD, painter)
+        elif stop_side == "top":
+            self.paintCircle(stop_center_x, stop_y, GUI_CIRCLE_RAD, painter)
+        elif stop_side == "bottom":
+            self.paintCircle(
+                stop_center_x, stop_y + stop_rect.height(), GUI_CIRCLE_RAD, painter
+            )
+        elif stop_side == "left":
+            self.paintCircle(stop_x, stop_center_y, GUI_CIRCLE_RAD, painter)
+        elif stop_side == "right":
+            self.paintCircle(
+                stop_x + stop_rect.width(), stop_center_y, GUI_CIRCLE_RAD, painter
+            )
+
+        pen = QPen(QColor(0, 255, 0))
+        pen.setWidth(GUI_START_STOP_CIRCLE_WIDTH)
+        painter.setPen(pen)
+
+        start_side = start[2]
+        if start_side == "mid":
+            self.paintCircle(start_center_x, start_center_y, GUI_CIRCLE_RAD, painter)
+        elif start_side == "top":
+            self.paintCircle(start_center_x, start_y, GUI_CIRCLE_RAD, painter)
+        elif start_side == "bottom":
+            self.paintCircle(
+                start_center_x, start_y + start_rect.height(), GUI_CIRCLE_RAD, painter
+            )
+        elif start_side == "left":
+            self.paintCircle(start_x, start_center_y, GUI_CIRCLE_RAD, painter)
+        elif start_side == "right":
+            self.paintCircle(
+                start_x + start_rect.width(), start_center_y, GUI_CIRCLE_RAD, painter
+            )
+        return
+
     def paintArrow(self, action, painter: QPainter):
         cell = action["points"]
         direc = action["direction"]
@@ -162,7 +197,19 @@ class PaintGridWidget(QWidget):
         )
         return
 
-    def paintBlock(self, block):
+    def paintCircle(self, x: int, y: int, rad: int, painter: QPainter):
+        painter.drawEllipse(
+            x - rad,
+            y - rad,
+            rad * 2,
+            rad * 2,
+        )
+        return
+
+    def paintBlock(self, block, painter: QPainter):
+        pen = QPen(QColor(255, 0, 0))  # Red color
+        pen.setWidth(ROBOT_RADIUS)
+        painter.setPen(pen)
         points = block["points"]
         pos = block["pos"]
         widget1 = self.layout.itemAtPosition(points[0], points[1]).widget()
@@ -207,4 +254,4 @@ class PaintGridWidget(QWidget):
         # print("----")
         # print(p1.x(), p1.y(), p2.x(), p2.y())
         # print("~~~~~")
-        return (p1, p2)
+        painter.drawLine(p1, p2)

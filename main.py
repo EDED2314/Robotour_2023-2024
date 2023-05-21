@@ -21,7 +21,7 @@ from PyQt5.QtCore import QSize, Qt, QPoint
 
 from utils.data import initData, initRobotdata, clearMovements
 from layouts.map import Map
-from widgets.line import PaintGridWidget
+from widgets.paint import PaintGridWidget
 from utils.export import convertToRobotableJson
 
 

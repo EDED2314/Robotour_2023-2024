@@ -79,5 +79,20 @@
         0,
         1
     ],
-    "actions": []
+    "actions": [
+        {
+            "points": [
+                0,
+                0
+            ],
+            "direction": "R"
+        },
+        {
+            "points": [
+                0,
+                1
+            ],
+            "direction": "R"
+        }
+    ]
 }

@@ -53,8 +53,8 @@ class MainWindow(QMainWindow):
         export_action.triggered.connect(self.exportClicked)
         clear_movements = QAction("Clear Movements", self)
         clear_movements.triggered.connect(self.clear)
-        toolbar.addAction(clear_movements)
         toolbar.addAction(export_action)
+        toolbar.addAction(clear_movements)
 
     def clear(self):
         clearMovements()

@@ -7,10 +7,18 @@ from constants import *
 
 def convertToRobotableJson(path):
     initRobotdata()
-    robo = initData()
-    robo.__delitem__("gates")  # probably want to add it back
-    # todo: implement actions
-    blocks = robo.get("blocks", [])  # [x1,x2,y1,y2]
+    robo = initData()  # (dict[str, Any] | Any | None)
+    gates = robo.get("gates", [])
+    new_gates = []
+    for gate in gates:
+        x = gate[0] * SQUARE_SIZE
+        y = gate[1] * SQUARE_SIZE
+        center_x = x + SQUARE_SIZE // 2
+        center_y = y + SQUARE_SIZE // 2
+
+        new_gates.append([center_x, center_y])
+
+    blocks = robo.get("blocks", [])
     new_blks = []
     actions = robo.get("actions", [])
     new_actions = []
@@ -106,6 +114,7 @@ def convertToRobotableJson(path):
     robo["stop"] = [actual_stop_y, actual_stop_x]
     robo["blocks"] = new_blks
     robo["actions"] = new_actions
+    robo["gates"] = new_gates
 
     boo = write_json_file(robo, path)
 

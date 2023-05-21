@@ -42,8 +42,6 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
 
-        self.map_widget.setLinePoints(QPoint(0, 0), QPoint(1, 1))
-
         self.setCentralWidget(central_widget)
 
     def initToolBar(self):

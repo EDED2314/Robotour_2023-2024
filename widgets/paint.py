@@ -28,11 +28,6 @@ class PaintGridWidget(QWidget):
         paint_grid_object_self.actions = paint_grid_object_self.json_data["actions"]
         paint_grid_object_self.update()
 
-    def setLinePoints(self, start, end):
-        self.line_start = start
-        self.line_end = end
-        self.update()
-
     def paintEvent(self, event):
         super().paintEvent(event)
         painter = QPainter(self)

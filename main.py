@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QDrag, QColor, QPainter
 from PyQt5.QtCore import QSize, Qt, QPoint
 
-from utils.data import initData, initRobotdata
+from utils.data import initData, initRobotdata, clearMovements
 from layouts.map import Map
 from widgets.line import PaintGridWidget
 from utils.export import convertToRobotableJson
@@ -36,13 +36,13 @@ class MainWindow(QMainWindow):
 
         main_layout = QHBoxLayout()
 
-        map_widget = PaintGridWidget(self.json_data)
-        main_layout.addWidget(map_widget)
+        self.map_widget = PaintGridWidget(self.json_data)
+        main_layout.addWidget(self.map_widget)
 
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
 
-        map_widget.setLinePoints(QPoint(0, 0), QPoint(1, 1))
+        self.map_widget.setLinePoints(QPoint(0, 0), QPoint(1, 1))
 
         self.setCentralWidget(central_widget)
 
@@ -51,7 +51,14 @@ class MainWindow(QMainWindow):
         self.addToolBar(toolbar)
         export_action = QAction("Export To Robot Json", self)
         export_action.triggered.connect(self.exportClicked)
+        clear_movements = QAction("Clear Movements", self)
+        clear_movements.triggered.connect(self.clear)
+        toolbar.addAction(clear_movements)
         toolbar.addAction(export_action)
+
+    def clear(self):
+        clearMovements()
+        self.map_widget.refreshData(self.map_widget)
 
     def exportClicked(self):
         file_dialog = QFileDialog()

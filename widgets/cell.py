@@ -42,7 +42,7 @@ class CellWidget(QFrame):
         action1 = context_menu.addAction("Blocks")
         self.generateSubActionsForBlocks(action1)
 
-        action2 = context_menu.addAction("Movement (Useless rn)")
+        action2 = context_menu.addAction("Movement")
         self.generateSubActionsForMovement(action2)
 
         action3 = context_menu.addAction("Start/Stop")

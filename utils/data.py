@@ -52,6 +52,14 @@ def initRobotdata():
     return data
 
 
+def clearMovements():
+    j = read_json_file("nav.json")
+    # print(j["actions"])
+    for move in j["actions"]:
+        j["actions"].remove(move)
+    write_json_file(j, "nav.json")
+
+
 def appendOrDeleteBlocks(block):
     """Append block to blocks in nav.json
 

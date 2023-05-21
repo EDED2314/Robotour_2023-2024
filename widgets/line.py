@@ -18,7 +18,7 @@ class PaintGridWidget(QWidget):
         self.actions = self.json_data["actions"]
         # print(self.blocks)
 
-        self.arrow_size = 15
+        self.arrow_size = 10
         self.robot_bounds = 20
 
     def refreshData(self, paint_grid_object_self):
@@ -83,11 +83,46 @@ class PaintGridWidget(QWidget):
 
     def getArrowHeadPoints(self, end_point: QPoint, direc):
         # todo: change direction of arrow dybnamically
-        return [
-            end_point,
-            QPoint(end_point.x() + self.arrow_size, end_point.y() + self.arrow_size),
-            QPoint(end_point.x() - self.arrow_size, end_point.y() + self.arrow_size),
-        ]
+        if direc == "F":
+            return [
+                end_point,
+                QPoint(
+                    end_point.x() + self.arrow_size, end_point.y() + self.arrow_size
+                ),
+                QPoint(
+                    end_point.x() - self.arrow_size, end_point.y() + self.arrow_size
+                ),
+            ]
+        elif direc == "R":
+            return [
+                end_point,
+                QPoint(
+                    end_point.x() - self.arrow_size, end_point.y() - self.arrow_size
+                ),
+                QPoint(
+                    end_point.x() - self.arrow_size, end_point.y() + self.arrow_size
+                ),
+            ]
+        elif direc == "B":
+            return [
+                end_point,
+                QPoint(
+                    end_point.x() - self.arrow_size, end_point.y() - self.arrow_size
+                ),
+                QPoint(
+                    end_point.x() + self.arrow_size, end_point.y() - self.arrow_size
+                ),
+            ]
+        elif direc == "L":
+            return [
+                end_point,
+                QPoint(
+                    end_point.x() + self.arrow_size, end_point.y() + self.arrow_size
+                ),
+                QPoint(
+                    end_point.x() + self.arrow_size, end_point.y() - self.arrow_size
+                ),
+            ]
 
     def paintArrow(self, action, painter: QPainter):
         cell = action["points"]

@@ -347,21 +347,6 @@ class Algorithm:
                 wallp2 = np.array(wall[1])
                 dis1 = np.linalg.norm(wallp1 - ip)
                 dis2 = np.linalg.norm(wallp2 - ip)
-
-                conditionp1 = np.logical_or(wallp1 < 0, wallp1 > Algorithm.SIZE)
-                conditionp2 = np.logical_or(wallp2 < 0, wallp2 > Algorithm.SIZE)
-
-                if np.any(conditionp1):
-                    self.giveMePathFromStartToEndPoint(
-                        path, tuple(wallp2.tolist()), end_point, start_point
-                    )
-                    return path
-                elif np.any(conditionp2):
-                    self.giveMePathFromStartToEndPoint(
-                        path, tuple(wallp1.tolist()), end_point, start_point
-                    )
-                    return path
-
                 if dis1 <= dis2:
                     self.giveMePathFromStartToEndPoint(
                         path, tuple(wallp1.tolist()), end_point, start_point
@@ -386,20 +371,6 @@ class Algorithm:
                 wallp2 = np.array(wall[1])
                 dis1 = np.linalg.norm(wallp1 - ip)
                 dis2 = np.linalg.norm(wallp2 - ip)
-
-                conditionp1 = np.logical_or(wallp1 < 0, wallp1 > Algorithm.SIZE)
-                conditionp2 = np.logical_or(wallp2 < 0, wallp2 > Algorithm.SIZE)
-
-                if np.any(conditionp1):
-                    self.giveMePathFromStartToEndPoint(
-                        path, tuple(wallp2.tolist()), end_point, start_point
-                    )
-                    return path
-                elif np.any(conditionp2):
-                    self.giveMePathFromStartToEndPoint(
-                        path, tuple(wallp1.tolist()), end_point, start_point
-                    )
-                    return path
 
                 if dis1 <= dis2:
                     self.giveMePathFromStartToEndPoint(
@@ -434,6 +405,9 @@ class Algorithm:
                 gate_dict[i] = []
 
             path = self.giveMePathFromStartToEndPoint([], self.start, gate)
+
+            gate_dict[i].extend(path)
+
             path = self.giveMePathFromStartToEndPoint(path, gate, self.stop)
 
             gate_dict[i].extend(path)
@@ -447,7 +421,7 @@ class Algorithm:
             self.gates,
             self.block_lines_form,
             Algorithm.SIZE,
-            gate_dict[0],
+            gate_dict[1],
             # {"line": line},  # , "wall_lines": self.sorted_n_wall_lines_to_draw},
         )
         vis.run()

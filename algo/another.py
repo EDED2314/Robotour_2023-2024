@@ -1,8 +1,10 @@
 import numpy as np
+from visualizer import Visualizer
 
 
 class Algorithm:
-    ROBOT_RADIUS = 20
+    ROBOT_RADIUS = 10
+    SIZE = 200
 
     def __init__(self):
         return
@@ -34,27 +36,41 @@ class Algorithm:
     def initSample(self):
         sample = {
             "blocks": [
-                [0, 100, 50, 100],  # x1,y1,x2,y2
-                [50, 50, 50, 100],
-                [100, 200, 150, 200],
-                [50, 100, 50, 150],
+                [50, 50, 100, 50],
+                [100, 0, 100, 50],
+                [150, 150, 200, 150],
+                [150, 0, 150, 50],
                 [100, 100, 150, 100],
-                [100, 100, 150, 100],
-                [100, 0, 150, 0],
+                [50, 150, 100, 150],
+                [0, 100, 50, 100],
                 [100, 100, 100, 150],
             ],
-            "gates": [25, 125],
+            "gates": [[25, 125], [125, 25], [125, 175]],
             "start": [75, 175],
             "stop": [75, 25],
             "actions": [],
         }
 
         self.blocks = []
+
+        self.block_lines_form = []
         for block in sample["blocks"]:
-            result = [(block[i], block[i + 1]) for i in range(0, len(block) - 1, 2)]
+            self.block_lines_form.append(
+                [
+                    (block[i], Algorithm.SIZE - block[i + 1])
+                    for i in range(0, len(block) - 1, 2)
+                ]
+            )
+
+        for block in sample["blocks"]:
+            result = [
+                (block[i], Algorithm.SIZE - block[i + 1])
+                for i in range(0, len(block) - 1, 2)
+            ]
             outline_points = self.calculate_outline_points(
                 result, Algorithm.ROBOT_RADIUS * 2
             )
+            # print(outline_points)
             for i in range(len(outline_points)):
                 for k in range(i, len(outline_points), 1):
                     p1 = outline_points[k]
@@ -63,29 +79,48 @@ class Algorithm:
                     p1y = p1[1]
                     p2x = p2[0]
                     p2y = p2[1]
-                    if (p1x == p2x or p1y == p2y) and not (p1x == p2x and p2y == p2y):
+                    if (
+                        (p1x == p2x or p1y == p2y)
+                        and not (p1x == p2x and p1y == p2y)
+                        # and (p1x >= 0 and p1y >= 0 and p2x >= 0 and p2y >= 0)
+                        # and (
+                        #     p1x <= Algorithm.SIZE
+                        #     and p1y <= Algorithm.SIZE
+                        #     and p2x <= Algorithm.SIZE
+                        #     and p2y <= Algorithm.SIZE
+                        # )
+                    ):
                         self.blocks.append((p1, p2))
 
+        # self.blocks = list(set(self.blocks))
         sample["blocks"] = self.blocks
-        sample["gates"] = [
-            (sample["gates"][i], sample["gates"][i + 1])
-            for i in range(0, len(sample["gates"]) - 1, 2)
-        ]
+        self.gates = []
+        for gate in sample["gates"]:
+            gatex = gate[1]
+            gatey = Algorithm.SIZE - gate[0]
+            self.gates.append((gatex, gatey))
+
+        sample["gates"] = self.gates
+
+        # sample["gates"] = [
+        #     (sample["gates"][i], sample["gates"][i + 1])
+        #     for i in range(0, len(sample["gates"]) - 1, 2)
+        # ]
 
         self.map = sample
         return sample
 
-    def calc_gates(self):
-        gates = self.map["gates"]
-        for gate in gates:
-            x = gate[0]
-            y = gate[1]
-
     def init(self):
         self.initSample()
         self.gates = self.map["gates"]
-        self.start = (self.map["start"][0], self.map["start"][1])
-        self.stop = (self.map["stop"][0], self.map["stop"][1])
+        self.start = (
+            self.map["start"][0],
+            Algorithm.SIZE - self.map["start"][1],
+        )
+        self.stop = (
+            self.map["stop"][0],
+            Algorithm.SIZE - self.map["stop"][1],
+        )
 
     def test(self):
         return
@@ -134,7 +169,7 @@ class Algorithm:
         start_point - start point (x,y)
         end_point - end point (x,y)
         """
-        self.init()
+        # self.init()
         wall_paths = self.blocks
 
         n_end = np.subtract(end_point, start_point)
@@ -162,7 +197,7 @@ class Algorithm:
         dis_arr = []
         dis_dict = {}
         occur_dis_dict = {}
-        sorted_n_wall_lines = {}
+        sorted_n_wall_lines = []
         # example dict is {dis: [((x1,y1), (x2,y2) ), ....]}
         for line in n_wall_lines:
             dis = max(np.linalg.norm(line[0]), np.linalg.norm(line[1]))
@@ -182,13 +217,25 @@ class Algorithm:
 
             occur_dis_dict[dis] += 1
 
-        # print(sorted_n_wall_lines)
+        sorted_n_wall_lines = np.array(sorted_n_wall_lines)
+        print("------")
+        print(sorted_n_wall_lines)
         # collision detection, detect collision
 
     def run(self):
         self.init()
-        # print(self.blocks)
-        self.checkIntersection((50, 50), (100, 100))
+        # # print(self.blocks)
+        # self.checkIntersection((50, 50), (100, 100))
+        vis = Visualizer(
+            self.blocks,
+            self.start,
+            self.stop,
+            self.gates,
+            self.block_lines_form,
+            Algorithm.SIZE,
+        )
+        vis.run()
+        # vis.tryi()
 
 
 al = Algorithm()

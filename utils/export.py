@@ -48,8 +48,8 @@ def convertToRobotableJson(path):
     for block in blocks:
         points = block["points"]
         pos = block["pos"]
-        real_x = points[0] * SQUARE_SIZE
-        real_y = points[1] * SQUARE_SIZE
+        real_x = points[1] * SQUARE_SIZE
+        real_y = points[0] * SQUARE_SIZE
         mod_x = real_x
         mod_y = real_y
 
@@ -66,6 +66,8 @@ def convertToRobotableJson(path):
             real_x += SQUARE_SIZE
             mod_x += SQUARE_SIZE
 
+        print(block)
+        print([real_x, real_y, mod_x, mod_y])
         new_blks.append([real_x, real_y, mod_x, mod_y])
 
     start_x = robo["start"][0] * SQUARE_SIZE

@@ -153,27 +153,67 @@ class Algorithm:
 
         return stoppaths
 
-    def checkIntersection(self, start_point: tuple, end_point: tuple):
+    def is_intersect(self, line1, line2):
         """
-        normalize wall paths by subtracting the start point in the path to the array
-        assign wall_paths variable to the new array
-        normalize end by subtracting startpoint from end point
-        start the new path from 0,0 to normalized end -> travel path
+        Checks if two line segments intersect.
 
-        calculating the distance r of travel_path (start to end) using pythag, start to end
-        start by ordering from wall_paths with the smallest radius to greatest  radius. |p1|, |p2|
+        Args:
+            line1: A tuple of two points that define the first line segment.
+            line2: A tuple of two points that define the second line segment.
 
-        if wall_paths have both points with distance greater than r, disclude them from checkable locations -> pop from array.
+        Returns:
+            True if the lines intersect, False otherwise.
+        """
 
-        find the start and end angles of the wall path using atan (remember the difference be greater than 180, if it is greater than 180, reverse the start and end angles)
-        special cases, vertical cases, 90* and 270*
-        check if travel path angle (atan(y/x)) resides between the start and end angles of the wall paths
-        if it does, count that as the intersection, record the wall path point with the smallest possible distance to it, return
+        # Extract coordinates from the line segments
+        x1, y1 = line1[0]
+        x2, y2 = line1[1]
+        x3, y3 = line2[0]
+        x4, y4 = line2[1]
 
-        parameters
-        -------
-        start_point - start point (x,y)
-        end_point - end point (x,y)
+        # Check if the lines are collinear.
+        if np.array_equal(line1[0], line2[0]) and np.array_equal(line1[1], line2[1]):
+            return False
+
+        # Calculate the determinant of the line segments
+        det = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+
+        # Check if the lines are parallel
+        if det == 0:
+            return False
+
+        # Calculate the intersection point
+        intersection_x = (
+            (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)
+        ) / det
+        intersection_y = (
+            (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)
+        ) / det
+        """
+        This formula is derived from the equations of two lines in the form Ax + By = C. 
+        By solving these equations using determinants, we can find the intersection point :DDDD!!
+        """
+
+        # Check if the intersection point lies within both line segments
+        if (
+            min(x1, x2) <= intersection_x <= max(x1, x2)
+            and min(y1, y2) <= intersection_y <= max(y1, y2)
+            and min(x3, x4) <= intersection_x <= max(x3, x4)
+            and min(y3, y4) <= intersection_y <= max(y3, y4)
+        ):
+            return intersection_x, intersection_y
+
+        return None, None
+
+    def checkIntersectionWithBlocks(self, start_point: tuple, end_point: tuple):
+        """
+        Args
+
+        start_point
+            start point (x,y)
+
+        end_point
+            end point (x,y)
         """
         # self.init()
         wall_paths = self.blocks
@@ -237,13 +277,25 @@ class Algorithm:
             occur_dis_dict[dis] += 1
 
         sorted_n_wall_lines_to_put_in_param = np.array(sorted_n_wall_lines)
+        # sorted_n_wall_lines = sorted_n_wall_lines_to_put_in_param.tolist()
         self.setSortedNWallLinesToDraw(sorted_n_wall_lines_to_put_in_param, start_point)
+        #  sorted_n_wall_lines = np.array(sorted_n_wall_lines)
 
-        sorted_n_wall_lines = sorted_n_wall_lines_to_put_in_param.tolist()
+        intersection_points = []
+        for line in sorted_n_wall_lines_to_put_in_param:
+            x, y = self.is_intersect(np.array([start_point, end_point]), line)
+            if not (x is None or y is None):
+                intersection_points.append((x, y))
+        intersection_points = list(set(intersection_points))
 
-        # print("------")
-        # print(dis_dict)
-        # print(sorted_n_wall_lines)
+        min_dis = 10000000
+        dis_inter_point_dict = {}
+        for p in intersection_points:
+            dis = np.linalg.norm(np.array(p) - np.array(start_point))
+            dis_inter_point_dict[dis] = p
+            min_dis = min(min_dis, dis)
+
+        return dis_inter_point_dict.get(min_dis, (0, 0))
 
     # collision detection, detect collision
 
@@ -251,7 +303,8 @@ class Algorithm:
         self.init()
         # # print(self.blocks)
         line = [(75, 25), (25, 75)]
-        self.checkIntersection(line[0], line[1])
+        ret = self.checkIntersection(line[0], line[1])
+        print(ret)
 
         vis = Visualizer(
             self.blocks,

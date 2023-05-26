@@ -304,16 +304,16 @@ class Algorithm:
             dis_inter_point_dict[dis] = p
             min_dis = min(min_dis, dis)
 
-        print("---")
-        print("Line info: [start, stop]", start_point, end_point)
-        print("Line intersection points: ", intersection_points)
-        print(
-            "[POINT INTER WALL DCT] (key: point, val: the wall's line's points (2)): ",
-            point_inter_wall_dct,
-        )
-        print("Wall points used: " + str(walls_points_used))
-        print("Distance from inter point dict: ", dis_inter_point_dict)
-        print("Min dis: ", min_dis)
+        # print("---")
+        # print("Line info: [start, stop]", start_point, end_point)
+        # print("Line intersection points: ", intersection_points)
+        # print(
+        #     "[POINT INTER WALL DCT] (key: point, val: the wall's line's points (2)): ",
+        #     point_inter_wall_dct,
+        # )
+        # print("Wall points used: " + str(walls_points_used))
+        # print("Distance from inter point dict: ", dis_inter_point_dict)
+        # print("Min dis: ", min_dis)
 
         return (
             dis_inter_point_dict.get(min_dis, (-1, -1)),

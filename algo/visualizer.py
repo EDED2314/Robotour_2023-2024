@@ -11,6 +11,7 @@ class Visualizer:
         gates: list,
         wall_actually_lines: list,
         mapsize: int,
+        path: list,
         other=None,
     ):
         self.wall_lines = wall_lines
@@ -18,6 +19,7 @@ class Visualizer:
         self.stop = stop
         self.gates = gates
         self.other = other
+        self.path = path
         self.wall_actually_lines = wall_actually_lines
         super().__init__()
 
@@ -25,6 +27,7 @@ class Visualizer:
         self.fig, self.ax = plt.subplots()
 
     def init(self):
+        plt.ion()
         self.ax.set_xlim(0, self.size)
         self.ax.set_ylim(0, self.size)
         self.ax.axhline(0, color="black", linewidth=0.5)
@@ -46,9 +49,15 @@ class Visualizer:
         for line in self.wall_actually_lines:
             self.drawLine(line[0], line[1], color="red")
 
-        self.drawLine(
-            self.other["line"][0], self.other["line"][1], color="green", linewidth=3
-        )
+        # self.drawLine(
+        #     self.other["line"][0], self.other["line"][1], color="green", linewidth=3
+        # )
+        for i in range(len(self.path) - 1):
+            point1 = self.path[i]
+            point2 = self.path[i + 1]
+            if i != 0:
+                self.drawCircle(self.path[i], 3, color="orange", fill=True)
+            self.drawLine(point1, point2, color="yellow")
         # for line in self.other["wall_lines"]:
         #     self.drawLine(line[0], line[1], color="yellow")
 
@@ -74,6 +83,7 @@ class Visualizer:
     def run(self):
         self.init()
         self.initDrawings()
+        plt.ioff()
         plt.show()
 
     def tryi(self):

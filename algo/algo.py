@@ -3,10 +3,11 @@ from visualizer import Visualizer
 
 
 class Algorithm:
-    ROBOT_RADIUS = 10
+    ROBOT_RADIUS = 10 + 5
     SIZE = 200
 
     def __init__(self):
+        self.visited = []
         return
 
     def calculate_outline_points(self, pointss, l):
@@ -173,14 +174,14 @@ class Algorithm:
 
         # Check if the lines are collinear.
         if np.array_equal(line1[0], line2[0]) and np.array_equal(line1[1], line2[1]):
-            return False
+            return None, None
 
         # Calculate the determinant of the line segments
         det = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
 
         # Check if the lines are parallel
         if det == 0:
-            return False
+            return None, None
 
         # Calculate the intersection point
         intersection_x = (
@@ -280,36 +281,97 @@ class Algorithm:
         #  sorted_n_wall_lines = np.array(sorted_n_wall_lines)
 
         intersection_points = []
+        point_inter_wall_dct = {}
+        walls_points_used = []
+
+        # print("---")
+
         for line in sorted_n_wall_lines_to_put_in_param:
+            #  print([start_point, end_point])
+            #  print(line)
             x, y = self.is_intersect(np.array([start_point, end_point]), line)
             if not (x is None or y is None):
                 intersection_points.append((x, y))
+                point_inter_wall_dct[(x, y)] = line
+                walls_points_used.append(line.tolist()[0])
+                walls_points_used.append(line.tolist()[1])
         intersection_points = list(set(intersection_points))
+
+        # print(intersection_points)
+        # print(point_inter_wall_dct)
+        # print(walls_points_used)
 
         min_dis = 10000000
         dis_inter_point_dict = {}
         for p in intersection_points:
+            if list(p) in walls_points_used:
+                continue
             dis = np.linalg.norm(np.array(p) - np.array(start_point))
             dis_inter_point_dict[dis] = p
             min_dis = min(min_dis, dis)
 
-        return dis_inter_point_dict.get(min_dis, (-1, -1))
+        #  print(dis_inter_point_dict)
+
+        return (
+            dis_inter_point_dict.get(min_dis, (-1, -1)),
+            point_inter_wall_dct.get(
+                dis_inter_point_dict.get(min_dis, (-1, -1)),
+                np.array((np.array((-1, -1)), np.array((-1, -1)))),
+            ).tolist(),
+        )
 
     # collision detection, detect collision
     def startPointToGates(self):
         start_point = self.start
         gates = self.gates
         for gate in gates:
-            print(start_point, gate)
+            # print(start_point, gate)
             inter_point = self.checkIntersectionWithBlocks(start_point, gate)
-            print(inter_point)
+            # print(inter_point)
+            # if inter_point[0] != -1 and inter_point[1] != -1:
+            #     pass
+
+    def giveMePathFromStartToEndPoint(self, path: list, start_point, end_point):
+        path.append(start_point)
+        ret = self.checkIntersectionWithBlocks(start_point, end_point)
+        if ret[0][0] != -1 and ret[0][1] != -1:
+            wall = ret[1]
+            ip = ret[0]
+            wallp1 = np.array(wall[0])
+            wallp2 = np.array(wall[1])
+            dis1 = np.linalg.norm(wallp1 - ip)
+            dis2 = np.linalg.norm(wallp2 - ip)
+
+            if dis1 <= dis2:
+                self.giveMePathFromStartToEndPoint(
+                    path, tuple(wallp1.tolist()), end_point
+                )
+                return path
+            elif dis2 < dis1:
+                self.giveMePathFromStartToEndPoint(
+                    path, tuple(wallp2.tolist()), end_point
+                )
+                return path
+        else:
+            path.append(end_point)
+            return path
 
     def run(self):
         self.init()
 
-        line = [(75, 25), (25, 75)]
-        # ret = self.checkIntersectionWithBlocks(line[0], line[1])
-        self.startPointToGates()
+        #  line = [(75, 25), (25, 75)]
+        # self.startPointToGates()
+        gates = self.gates
+        # for gate in gates:
+        #     print(self.start, gate)
+        #     inter_point = self.checkIntersectionWithBlocks(self.start, gate)
+        #     print(inter_point)
+        gate = gates[1]
+        path = self.giveMePathFromStartToEndPoint([], self.start, gate)
+        print(path)
+
+        path = self.giveMePathFromStartToEndPoint(path, gate, self.stop)
+        print(path)
 
         vis = Visualizer(
             self.blocks,
@@ -318,7 +380,8 @@ class Algorithm:
             self.gates,
             self.block_lines_form,
             Algorithm.SIZE,
-            {"line": line}#, "wall_lines": self.sorted_n_wall_lines_to_draw},
+            path,
+            # {"line": line},  # , "wall_lines": self.sorted_n_wall_lines_to_draw},
         )
         vis.run()
 

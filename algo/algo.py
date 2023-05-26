@@ -219,8 +219,6 @@ class Algorithm:
         wall_paths = self.blocks
 
         n_end = np.subtract(end_point, start_point)
-        n_start = np.array((0, 0))
-        print(n_end, n_start)
 
         n_wall_lines = np.array(
             [
@@ -233,7 +231,7 @@ class Algorithm:
         )
 
         travel_path_distance = np.linalg.norm(n_end)
-        print(travel_path_distance)
+        # print(travel_path_distance)
 
         # wall path distaces
         # between each point find the shortest distance
@@ -295,16 +293,23 @@ class Algorithm:
             dis_inter_point_dict[dis] = p
             min_dis = min(min_dis, dis)
 
-        return dis_inter_point_dict.get(min_dis, (0, 0))
+        return dis_inter_point_dict.get(min_dis, (-1, -1))
 
     # collision detection, detect collision
+    def startPointToGates(self):
+        start_point = self.start
+        gates = self.gates
+        for gate in gates:
+            print(start_point, gate)
+            inter_point = self.checkIntersectionWithBlocks(start_point, gate)
+            print(inter_point)
 
     def run(self):
         self.init()
-        # # print(self.blocks)
+
         line = [(75, 25), (25, 75)]
-        ret = self.checkIntersection(line[0], line[1])
-        print(ret)
+        # ret = self.checkIntersectionWithBlocks(line[0], line[1])
+        self.startPointToGates()
 
         vis = Visualizer(
             self.blocks,
@@ -313,7 +318,7 @@ class Algorithm:
             self.gates,
             self.block_lines_form,
             Algorithm.SIZE,
-            {"line": line, "wall_lines": self.sorted_n_wall_lines_to_draw},
+            {"line": line}#, "wall_lines": self.sorted_n_wall_lines_to_draw},
         )
         vis.run()
 

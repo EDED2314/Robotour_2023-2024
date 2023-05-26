@@ -49,8 +49,8 @@ class Visualizer:
         self.drawLine(
             self.other["line"][0], self.other["line"][1], color="green", linewidth=3
         )
-        for line in self.other["wall_lines"]:
-            self.drawLine(line[0], line[1], color="yellow")
+        # for line in self.other["wall_lines"]:
+        #     self.drawLine(line[0], line[1], color="yellow")
 
     def drawLine(
         self, point1: tuple, point2: tuple, color: str = "blue", linewidth: int = 2

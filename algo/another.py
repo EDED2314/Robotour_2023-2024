@@ -122,8 +122,14 @@ class Algorithm:
             Algorithm.SIZE - self.map["stop"][1],
         )
 
-    def test(self):
-        return
+    def setSortedNWallLinesToDraw(self, sorted_n_wall_lines, start_point):
+        self.sorted_n_wall_lines_to_draw = []
+        for n_wall_line in sorted_n_wall_lines:
+            p1 = n_wall_line[0]
+            p2 = n_wall_line[1]
+            p1 += start_point
+            p2 += start_point
+            self.sorted_n_wall_lines_to_draw.append(np.array([p1, p2]))
 
     # path arrays with start path
     def createpath(self, startpoint, endpoint):
@@ -186,7 +192,6 @@ class Algorithm:
             ]
         )
 
-        print(n_wall_lines)
         travel_path_distance = np.linalg.norm(n_end)
         print(travel_path_distance)
 
@@ -194,12 +199,13 @@ class Algorithm:
         # between each point find the shortest distance
         # use that distance and compare it with other distances found via that method
 
-        dis_arr = []
+        dis_arr = []  # tehcniqually just keys lol
         dis_dict = {}
         occur_dis_dict = {}
         sorted_n_wall_lines = []
         # example dict is {dis: [((x1,y1), (x2,y2) ), ....]}
         for line in n_wall_lines:
+            # todo - idk why its max its supposed to be min but min gives odd results test with more cases
             dis = max(np.linalg.norm(line[0]), np.linalg.norm(line[1]))
             dis_arr.append(dis)
             if dis not in dis_dict:
@@ -207,7 +213,20 @@ class Algorithm:
             dis_dict[dis].append(line)
 
         dis_arr = sorted(dis_arr)
-        for dis in dis_arr:
+
+        # print(dis_arr)
+
+        new_keys_for_dis_dict = []
+        for the_dis_in_array in dis_arr:
+            if the_dis_in_array > travel_path_distance:
+                break
+            else:
+                # the_dis_in_array < travel_path_distance
+                new_keys_for_dis_dict.append(the_dis_in_array)
+
+        # print(new_keys_for_dis_dict)
+
+        for dis in new_keys_for_dis_dict:
             if dis not in occur_dis_dict:
                 occur_dis_dict[dis] = 0
 
@@ -217,15 +236,23 @@ class Algorithm:
 
             occur_dis_dict[dis] += 1
 
-        sorted_n_wall_lines = np.array(sorted_n_wall_lines)
-        print("------")
-        print(sorted_n_wall_lines)
-        # collision detection, detect collision
+        sorted_n_wall_lines_to_put_in_param = np.array(sorted_n_wall_lines)
+        self.setSortedNWallLinesToDraw(sorted_n_wall_lines_to_put_in_param, start_point)
+
+        sorted_n_wall_lines = sorted_n_wall_lines_to_put_in_param.tolist()
+
+        # print("------")
+        # print(dis_dict)
+        # print(sorted_n_wall_lines)
+
+    # collision detection, detect collision
 
     def run(self):
         self.init()
         # # print(self.blocks)
-        # self.checkIntersection((50, 50), (100, 100))
+        line = [(75, 25), (25, 75)]
+        self.checkIntersection(line[0], line[1])
+
         vis = Visualizer(
             self.blocks,
             self.start,
@@ -233,9 +260,9 @@ class Algorithm:
             self.gates,
             self.block_lines_form,
             Algorithm.SIZE,
+            {"line": line, "wall_lines": self.sorted_n_wall_lines_to_draw},
         )
         vis.run()
-        # vis.tryi()
 
 
 al = Algorithm()

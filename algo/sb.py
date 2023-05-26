@@ -69,6 +69,7 @@ class SourishAlgorithm:
         return outline_points
 
     def test(self):
+        # result = [(array[i], array[i+1]) for i in range(0, len(array)-1, 2)]
         points = [(0, 100), (50, 100)]
         points = [(100, 200), (150, 200)]
         points = [(100, 100), (100, 150)]

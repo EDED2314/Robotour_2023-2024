@@ -401,6 +401,31 @@ class Algorithm:
                     )
                     return path
 
+                wallp1_fail = False
+                wallp2_fail = False
+                for block_lines in self.block_lines_form:
+                    x, y = self.is_intersect(
+                        block_lines, (tuple(wallp1.tolist()), end_point)
+                    )
+                    if x is not None and y is not None:
+                        wallp1_fail = True
+                    x, y = self.is_intersect(
+                        block_lines, (tuple(wallp2.tolist()), end_point)
+                    )
+                    if x is not None and y is not None:
+                        wallp2_fail = True
+
+                if wallp1_fail:
+                    self.giveMePathFromStartToEndPoint(
+                        path, tuple(wallp2.tolist()), end_point, start_point
+                    )
+                    return path
+                elif wallp2_fail:
+                    self.giveMePathFromStartToEndPoint(
+                        path, tuple(wallp1.tolist()), end_point, start_point
+                    )
+                    return path
+
                 if dis1 <= dis2:
                     self.giveMePathFromStartToEndPoint(
                         path, tuple(wallp1.tolist()), end_point, start_point
@@ -447,7 +472,7 @@ class Algorithm:
             self.gates,
             self.block_lines_form,
             Algorithm.SIZE,
-            gate_dict[0],
+            gate_dict[2],
             # {"line": line},  # , "wall_lines": self.sorted_n_wall_lines_to_draw},
         )
         vis.run()

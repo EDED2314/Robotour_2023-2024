@@ -3,7 +3,7 @@ from visualizer import Visualizer
 
 
 class Algorithm:
-    ROBOT_RADIUS = 10 + 5
+    ROBOT_RADIUS = 10 + 10
     SIZE = 200
 
     def __init__(self):
@@ -37,7 +37,7 @@ class Algorithm:
     def initSample(self):
         sample = {
             "blocks": [
-                [50, 50, 100, 50],
+                [50, 49, 100, 49],
                 [100, 0, 100, 50],
                 [150, 150, 200, 150],
                 [150, 0, 150, 50],
@@ -52,8 +52,6 @@ class Algorithm:
             "actions": [],
         }
 
-        self.blocks = []
-
         self.block_lines_form = []
         for block in sample["blocks"]:
             self.block_lines_form.append(
@@ -63,6 +61,8 @@ class Algorithm:
                 ]
             )
 
+        self.blocks = []
+        self.walls_prime = []
         for block in sample["blocks"]:
             result = [
                 (block[i], Algorithm.SIZE - block[i + 1])
@@ -71,11 +71,16 @@ class Algorithm:
             outline_points = self.calculate_outline_points(
                 result, Algorithm.ROBOT_RADIUS * 2
             )
+            outline_points_prime = self.calculate_outline_points(
+                result, (Algorithm.ROBOT_RADIUS - 2) * 2
+            )
             # print(outline_points)
             for i in range(len(outline_points)):
                 for k in range(i, len(outline_points), 1):
                     p1 = outline_points[k]
                     p2 = outline_points[i]
+                    p1_prime = outline_points_prime[k]
+                    p2_prime = outline_points_prime[i]
                     p1x = p1[0]
                     p1y = p1[1]
                     p2x = p2[0]
@@ -92,8 +97,9 @@ class Algorithm:
                         # )
                     ):
                         self.blocks.append((p1, p2))
+                        # self.blocks.append((p1_prime, p2_prime))
+                        self.walls_prime.append((p1_prime, p2_prime))
 
-        # self.blocks = list(set(self.blocks))
         sample["blocks"] = self.blocks
         self.gates = []
         for gate in sample["gates"]:
@@ -206,21 +212,7 @@ class Algorithm:
 
         return None, None
 
-    def checkIntersectionWithBlocks(self, start_point: tuple, end_point: tuple):
-        """
-        Args
-
-        start_point
-            start point (x,y)
-
-        end_point
-            end point (x,y)
-        """
-        # self.init()
-        wall_paths = self.blocks
-
-        n_end = np.subtract(end_point, start_point)
-
+    def generate_normalized_wall_lines(self, wall_paths, start_point):
         n_wall_lines = np.array(
             [
                 (
@@ -230,14 +222,12 @@ class Algorithm:
                 for wall_path in wall_paths
             ]
         )
+        return n_wall_lines
 
-        travel_path_distance = np.linalg.norm(n_end)
-        # print(travel_path_distance)
-
+    def sort_wall_lines_based_on_min_distance(self, n_wall_lines, travel_path_distance):
         # wall path distaces
         # between each point find the shortest distance
         # use that distance and compare it with other distances found via that method
-
         dis_arr = []  # tehcniqually just keys lol
         dis_dict = {}
         occur_dis_dict = {}
@@ -247,6 +237,7 @@ class Algorithm:
             # todo - idk why its max its supposed to be min but min gives odd results test with more cases
             dis = min(np.linalg.norm(line[0]), np.linalg.norm(line[1]))
             dis_arr.append(dis)
+
             if dis not in dis_dict:
                 dis_dict[dis] = []
             dis_dict[dis].append(line)
@@ -275,16 +266,41 @@ class Algorithm:
 
             occur_dis_dict[dis] += 1
 
-        sorted_n_wall_lines_to_put_in_param = np.array(sorted_n_wall_lines)
+        return sorted_n_wall_lines
+
+    def checkIntersectionWithBlocks(self, start_point: tuple, end_point: tuple):
+        """
+        Args
+
+        start_point
+            start point (x,y)
+
+        end_point
+            end point (x,y)
+        """
+        # self.init()
+        wall_paths = self.blocks
+
+        n_end = np.subtract(end_point, start_point)
+
+        n_wall_lines = self.generate_normalized_wall_lines(wall_paths, start_point)
+
+        travel_path_distance = np.linalg.norm(n_end)
+
+        sorted_n_wall_lines = self.sort_wall_lines_based_on_min_distance(
+            n_wall_lines, travel_path_distance
+        )
+
+        sorted_wall_lines = np.array(sorted_n_wall_lines)
         # sorted_n_wall_lines = sorted_n_wall_lines_to_put_in_param.tolist()
-        self.setSortedNWallLinesToDraw(sorted_n_wall_lines_to_put_in_param, start_point)
+        self.setSortedNWallLinesToDraw(sorted_wall_lines, start_point)
         #  sorted_n_wall_lines = np.array(sorted_n_wall_lines)
 
         intersection_points = []
         point_inter_wall_dct = {}
         walls_points_used = []
 
-        for wall_line in sorted_n_wall_lines_to_put_in_param:
+        for wall_line in sorted_wall_lines:
             # print([start_point, end_point])
             # print(wall_line)
             x, y = self.is_intersect(np.array([start_point, end_point]), wall_line)
@@ -438,6 +454,7 @@ class Algorithm:
                     return path
             else:
                 path.append(end_point)
+
                 return path
 
     def run(self):
@@ -450,20 +467,72 @@ class Algorithm:
         #     inter_point = self.checkIntersectionWithBlocks(self.start, gate)
         #     print(inter_point)
 
-        gate_dict = {}
-        gates = self.gates
-        for i in range(len(gates)):
-            gate = gates[i]
+        path = []
+        gate1 = self.gates[1]
+        gate2 = self.gates[0]
+        path = self.giveMePathFromStartToEndPoint(path, self.start, gate1)
+        path = path[0 : len(path) - 1]
+        path = self.giveMePathFromStartToEndPoint(path, gate1, gate2)
+        path = path[0 : len(path) - 1]
+        path = self.giveMePathFromStartToEndPoint(path, gate2, self.stop)
 
-            if i not in gate_dict:
-                gate_dict[i] = []
+        print(path)
+        total_length = 0
+        total_angulardistance = 0
+        total_time = 0
 
-            path = self.giveMePathFromStartToEndPoint([], self.start, gate)
-            path = self.giveMePathFromStartToEndPoint(path, gate, self.stop)
+        for i in range(len(path) - 1):
+            p1 = path[i]
+            p2 = path[i + 1]
 
-            gate_dict[i].extend(path)
+            p1 = np.array(p1)
+            p2 = np.array(p2)
 
-        print(gate_dict)
+            length = np.linalg.norm(p1 - p2)
+            total_length += length
+
+        for i in range(len(path) - 2):
+            p1 = path[i]
+            p2 = path[i + 1]
+            p3 = path[i + 2]
+            p1 = np.array(p1)
+            p2 = np.array(p2)
+            p3 = np.array(p3)
+
+            pv1 = p2 - p1
+            pv2 = p3 - p2
+
+            angle = np.abs(
+                np.arccos(
+                    -1 * np.dot(pv1, pv2) / (np.linalg.norm(pv1) * np.linalg.norm(pv2))
+                )
+            )
+            total_angulardistance += angle
+
+        print(total_length)
+        print(total_angulardistance)
+
+        # [(75, 25), (30.0, 30.0), (25, 75), (25, 75), (70.0, 80.0), (80.0, 120.0), (120.0, 130.0), (125, 175), (125, 175), (120.0, 130.0), (80.0, 130.0), (30.0, 131.0), (30.0, 171.0), (75, 175)]
+
+        # angular displacement point i, point i+1, point i+2 -> good vectors by doing p1-p2 for each path. pv1 = p i +
+        # angle = abs( arccos(-pv1 dot pv2 / length pv1 length pv2))
+
+        # gate_dict = {}
+        # gates = self.gates
+        # for i in range(len(gates) - 1):
+        #     gate1 = gates[i]
+        #     gate2 = gates[i + 1]
+
+        #     if i not in gate_dict:
+        #         gate_dict[i] = []
+
+        #     path = self.giveMePathFromStartToEndPoint([], self.start, gate1)
+        #     path = self.giveMePathFromStartToEndPoint(path, gate1, gate2)
+        #     path = self.giveMePathFromStartToEndPoint(path, gate2, self.stop)
+
+        #     gate_dict[i].extend(path)
+
+        # print(gate_dict)
 
         vis = Visualizer(
             self.blocks,
@@ -472,7 +541,9 @@ class Algorithm:
             self.gates,
             self.block_lines_form,
             Algorithm.SIZE,
-            gate_dict[2],
+            path,
+            total_length,
+            total_time
             # {"line": line},  # , "wall_lines": self.sorted_n_wall_lines_to_draw},
         )
         vis.run()

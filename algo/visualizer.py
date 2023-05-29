@@ -12,6 +12,8 @@ class Visualizer:
         wall_actually_lines: list,
         mapsize: int,
         path: list,
+        length: float,
+        time: float,
         other=None,
     ):
         self.wall_lines = wall_lines
@@ -19,6 +21,8 @@ class Visualizer:
         self.stop = stop
         self.gates = gates
         self.other = other
+        self.length = length
+        self.time = time
         self.path = path
         self.wall_actually_lines = wall_actually_lines
         super().__init__()
@@ -58,6 +62,10 @@ class Visualizer:
             if i != 0:
                 self.drawCircle(self.path[i], 3, color="orange", fill=True)
             self.drawLine(point1, point2, color="yellow")
+
+        self.ax.text(self.size - 50, self.size - 50, str(self.length) + "cm")
+        self.ax.text(self.size - 50, self.size - 70, str(self.time) + "s")
+
         # for line in self.other["wall_lines"]:
         #     self.drawLine(line[0], line[1], color="yellow")
 

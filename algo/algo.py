@@ -524,8 +524,6 @@ class Algorithm:
             # centimeters
         )
 
-        # [(75, 25), (30.0, 30.0), (25, 75), (25, 75), (70.0, 80.0), (80.0, 120.0), (120.0, 130.0), (125, 175), (125, 175), (120.0, 130.0), (80.0, 130.0), (30.0, 131.0), (30.0, 171.0), (75, 175)]
-
         # angular displacement point i, point i+1, point i+2 -> good vectors by doing p1-p2 for each path. pv1 = p i +
         # angle = abs( arccos(-pv1 dot pv2 / length pv1 length pv2))
 

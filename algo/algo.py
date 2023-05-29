@@ -5,6 +5,7 @@ from visualizer import Visualizer
 class Algorithm:
     ROBOT_RADIUS = 10 + 10
     SIZE = 200
+    VELOCITY = 20
 
     def __init__(self):
         self.visited = []
@@ -468,13 +469,16 @@ class Algorithm:
         #     print(inter_point)
 
         path = []
-        gate1 = self.gates[1]
+        gate1 = self.gates[2]
         gate2 = self.gates[0]
+        gate3 = self.gates[1]
         path = self.giveMePathFromStartToEndPoint(path, self.start, gate1)
         path = path[0 : len(path) - 1]
         path = self.giveMePathFromStartToEndPoint(path, gate1, gate2)
         path = path[0 : len(path) - 1]
-        path = self.giveMePathFromStartToEndPoint(path, gate2, self.stop)
+        path = self.giveMePathFromStartToEndPoint(path, gate2, gate3)
+        path = path[0 : len(path) - 1]
+        path = self.giveMePathFromStartToEndPoint(path, gate3, self.stop)
 
         print(path)
         total_length = 0
@@ -509,8 +513,16 @@ class Algorithm:
             )
             total_angulardistance += angle
 
-        print(total_length)
-        print(total_angulardistance)
+        # print(total_length)
+        # print(total_angulardistance)
+
+        total_time = (
+            total_length / Algorithm.VELOCITY
+            + Algorithm.ROBOT_RADIUS
+            * total_angulardistance
+            / Algorithm.VELOCITY  # we can replace robot radius/velocuty as 1/angular velocity
+            # centimeters
+        )
 
         # [(75, 25), (30.0, 30.0), (25, 75), (25, 75), (70.0, 80.0), (80.0, 120.0), (120.0, 130.0), (125, 175), (125, 175), (120.0, 130.0), (80.0, 130.0), (30.0, 131.0), (30.0, 171.0), (75, 175)]
 
@@ -543,7 +555,9 @@ class Algorithm:
             Algorithm.SIZE,
             path,
             total_length,
-            total_time
+            total_time,
+            total_angulardistance,
+            Algorithm.VELOCITY
             # {"line": line},  # , "wall_lines": self.sorted_n_wall_lines_to_draw},
         )
         vis.run()

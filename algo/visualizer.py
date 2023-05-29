@@ -14,6 +14,8 @@ class Visualizer:
         path: list,
         length: float,
         time: float,
+        angle_dis: float,
+        velocity,
         other=None,
     ):
         self.wall_lines = wall_lines
@@ -23,7 +25,9 @@ class Visualizer:
         self.other = other
         self.length = length
         self.time = time
+        self.angle_dis = angle_dis
         self.path = path
+        self.velocity = velocity
         self.wall_actually_lines = wall_actually_lines
         super().__init__()
 
@@ -63,8 +67,12 @@ class Visualizer:
                 self.drawCircle(self.path[i], 3, color="orange", fill=True)
             self.drawLine(point1, point2, color="yellow")
 
-        self.ax.text(self.size - 50, self.size - 50, str(self.length) + "cm")
-        self.ax.text(self.size - 50, self.size - 70, str(self.time) + "s")
+        self.ax.text(self.size - 50, self.size - 20, str(round(self.length)) + " cm")
+        self.ax.text(self.size - 50, self.size - 30, str(round(self.time)) + " s")
+        self.ax.text(self.size - 50, self.size - 40, str(self.angle_dis) + " rad")
+        self.ax.text(
+            self.size - 50, self.size - 50, str(round(self.velocity)) + " cm/s"
+        )
 
         # for line in self.other["wall_lines"]:
         #     self.drawLine(line[0], line[1], color="yellow")

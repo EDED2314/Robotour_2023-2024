@@ -47,8 +47,8 @@ class Visualizer:
     def initDrawings(self):
         self.drawCircle(self.start, 5, color="green")
         self.drawCircle(self.stop, 5)
-        for line in self.wall_lines:
-            self.drawLine(line[0], line[1])
+        # for line in self.wall_lines:
+        #     self.drawLine(line[0], line[1])
 
         for gate in self.gates:
             self.drawCircle(gate, 5, "blue")

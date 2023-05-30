@@ -305,7 +305,9 @@ class Algorithm:
             x, y = self.is_intersect(np.array([start_point, end_point]), wall_line)
             if not (x is None or y is None):
                 intersection_points.append((x, y))
-                point_inter_wall_dct[(x, y)] = wall_line.tolist()
+                if (x, y) not in point_inter_wall_dct:
+                    point_inter_wall_dct[(x, y)] = []
+                point_inter_wall_dct[(x, y)].append(wall_line.tolist())
                 walls_points_used.append(wall_line.tolist()[0])
                 walls_points_used.append(wall_line.tolist()[1])
         intersection_points = list(set(intersection_points))
@@ -395,62 +397,64 @@ class Algorithm:
             path.append(start_point)
             ret = self.checkIntersectionWithBlocks(start_point, end_point)
             if ret[0][0] != -1 and ret[0][1] != -1:
-                wall = ret[1]
+                walls = ret[1]
                 ip = ret[0]
-                wallp1 = np.array(wall[0])
-                wallp2 = np.array(wall[1])
-                dis1 = np.linalg.norm(wallp1 - ip)
-                dis2 = np.linalg.norm(wallp2 - ip)
+                for wall in walls:
+                    # todo do later
+                    wallp1 = np.array(wall[0])
+                    wallp2 = np.array(wall[1])
+                    dis1 = np.linalg.norm(wallp1 - ip)
+                    dis2 = np.linalg.norm(wallp2 - ip)
 
-                conditionp1 = np.logical_or(wallp1 < 0, wallp1 > Algorithm.SIZE)
-                conditionp2 = np.logical_or(wallp2 < 0, wallp2 > Algorithm.SIZE)
+                    conditionp1 = np.logical_or(wallp1 < 0, wallp1 > Algorithm.SIZE)
+                    conditionp2 = np.logical_or(wallp2 < 0, wallp2 > Algorithm.SIZE)
 
-                if np.any(conditionp1):
-                    self.giveMePathFromStartToEndPoint(
-                        path, tuple(wallp2.tolist()), end_point, start_point
-                    )
-                    return path
-                elif np.any(conditionp2):
-                    self.giveMePathFromStartToEndPoint(
-                        path, tuple(wallp1.tolist()), end_point, start_point
-                    )
-                    return path
+                    if np.any(conditionp1):
+                        self.giveMePathFromStartToEndPoint(
+                            path, tuple(wallp2.tolist()), end_point, start_point
+                        )
+                        return path
+                    elif np.any(conditionp2):
+                        self.giveMePathFromStartToEndPoint(
+                            path, tuple(wallp1.tolist()), end_point, start_point
+                        )
+                        return path
 
-                wallp1_fail = False
-                wallp2_fail = False
-                for block_lines in self.block_lines_form:
-                    x, y = self.is_intersect(
-                        block_lines, (tuple(wallp1.tolist()), end_point)
-                    )
-                    if x is not None and y is not None:
-                        wallp1_fail = True
-                    x, y = self.is_intersect(
-                        block_lines, (tuple(wallp2.tolist()), end_point)
-                    )
-                    if x is not None and y is not None:
-                        wallp2_fail = True
+                    wallp1_fail = False
+                    wallp2_fail = False
+                    for block_lines in self.block_lines_form:
+                        x, y = self.is_intersect(
+                            block_lines, (tuple(wallp1.tolist()), end_point)
+                        )
+                        if x is not None and y is not None:
+                            wallp1_fail = True
+                        x, y = self.is_intersect(
+                            block_lines, (tuple(wallp2.tolist()), end_point)
+                        )
+                        if x is not None and y is not None:
+                            wallp2_fail = True
 
-                if wallp1_fail:
-                    self.giveMePathFromStartToEndPoint(
-                        path, tuple(wallp2.tolist()), end_point, start_point
-                    )
-                    return path
-                elif wallp2_fail:
-                    self.giveMePathFromStartToEndPoint(
-                        path, tuple(wallp1.tolist()), end_point, start_point
-                    )
-                    return path
+                    if wallp1_fail:
+                        self.giveMePathFromStartToEndPoint(
+                            path, tuple(wallp2.tolist()), end_point, start_point
+                        )
+                        return path
+                    elif wallp2_fail:
+                        self.giveMePathFromStartToEndPoint(
+                            path, tuple(wallp1.tolist()), end_point, start_point
+                        )
+                        return path
 
-                if dis1 <= dis2:
-                    self.giveMePathFromStartToEndPoint(
-                        path, tuple(wallp1.tolist()), end_point, start_point
-                    )
-                    return path
-                elif dis2 < dis1:
-                    self.giveMePathFromStartToEndPoint(
-                        path, tuple(wallp2.tolist()), end_point, start_point
-                    )
-                    return path
+                    if dis1 <= dis2:
+                        self.giveMePathFromStartToEndPoint(
+                            path, tuple(wallp1.tolist()), end_point, start_point
+                        )
+                        return path
+                    elif dis2 < dis1:
+                        self.giveMePathFromStartToEndPoint(
+                            path, tuple(wallp2.tolist()), end_point, start_point
+                        )
+                        return path
             else:
                 path.append(end_point)
 

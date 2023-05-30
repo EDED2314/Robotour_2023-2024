@@ -83,13 +83,13 @@ def convertToRobotableJson(path):
     if start_side == "mid":
         actual_start_x, actual_start_y = start_center_x, start_center_y
     elif start_side == "top":
-        actual_start_x, actual_start_y = start_center_x, start_y
-    elif start_side == "bottom":
-        actual_start_x, actual_start_y = start_center_x, start_y + SQUARE_SIZE
-    elif start_side == "left":
         actual_start_x, actual_start_y = start_x, start_center_y
-    elif start_side == "right":
+    elif start_side == "bottom":
         actual_start_x, actual_start_y = start_x + SQUARE_SIZE, start_center_y
+    elif start_side == "left":
+        actual_start_x, actual_start_y = start_center_x, start_y
+    elif start_side == "right":
+        actual_start_x, actual_start_y = start_center_x, start_y + SQUARE_SIZE
 
     stop_x = robo["stop"][0] * SQUARE_SIZE
     stop_y = robo["stop"][1] * SQUARE_SIZE
@@ -104,13 +104,13 @@ def convertToRobotableJson(path):
     if stop_side == "mid":
         actual_stop_x, actual_stop_y = stop_center_x, stop_center_y
     elif stop_side == "top":
-        actual_stop_x, actual_stop_y = stop_center_x, stop_y
+        actual_stop_x, actual_stop_y = stop_x, stop_center_y
     elif stop_side == "bottom":
-        actual_stop_x, actual_stop_y = stop_center_x, stop_y + SQUARE_SIZE
-    elif stop_side == "left":
-        actual_stop_x, actual_stop_y = stop_x, start_center_y
-    elif stop_side == "right":
         actual_stop_x, actual_stop_y = stop_x + SQUARE_SIZE, stop_center_y
+    elif stop_side == "left":
+        actual_stop_x, actual_stop_y = stop_center_x, stop_y
+    elif stop_side == "right":
+        actual_stop_x, actual_stop_y = stop_center_x, stop_y + SQUARE_SIZE
 
     robo["start"] = [actual_start_y, actual_start_x]
     robo["stop"] = [actual_stop_y, actual_stop_x]

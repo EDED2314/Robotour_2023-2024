@@ -67,12 +67,12 @@ class Visualizer:
                 self.drawCircle(self.path[i], 3, color="orange", fill=True)
             self.drawLine(point1, point2, color="yellow")
 
-        self.ax.text(self.size - 50, self.size - 20, str(round(self.length)) + " cm")
-        self.ax.text(self.size - 50, self.size - 30, str(round(self.time)) + " s")
-        self.ax.text(self.size - 50, self.size - 40, str(self.angle_dis) + " rad")
-        self.ax.text(
-            self.size - 50, self.size - 50, str(round(self.velocity)) + " cm/s"
-        )
+        # self.ax.text(self.size - 50, self.size - 20, str(round(self.length)) + " cm")
+        # self.ax.text(self.size - 50, self.size - 30, str(round(self.time)) + " s")
+        # self.ax.text(self.size - 50, self.size - 40, str(self.angle_dis) + " rad")
+        # self.ax.text(
+        #     self.size - 50, self.size - 50, str(round(self.velocity)) + " cm/s"
+        # )
 
         # for line in self.other["wall_lines"]:
         #     self.drawLine(line[0], line[1], color="yellow")

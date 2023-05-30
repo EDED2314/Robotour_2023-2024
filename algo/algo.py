@@ -3,7 +3,7 @@ from visualizer import Visualizer
 
 
 class Algorithm:
-    ROBOT_RADIUS = 10 + 10
+    ROBOT_RADIUS = 10 + 0
     SIZE = 200
     VELOCITY = 20
 
@@ -38,7 +38,7 @@ class Algorithm:
     def initSample(self):
         sample = {
             "blocks": [
-                [50, 50, 100, 50],
+                [50, 49, 100, 49],
                 [100, 0, 100, 50],
                 [150, 150, 200, 150],
                 [150, 0, 150, 50],

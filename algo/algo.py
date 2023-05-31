@@ -9,7 +9,6 @@ class Algorithm:
 
     def __init__(self):
         self.visited = []
-        no = 0
         return
 
     def calculate_outline_points(self, pointss, l):
